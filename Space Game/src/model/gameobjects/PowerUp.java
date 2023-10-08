@@ -1,46 +1,47 @@
 package model.gameobjects;
 
-import java.awt.image.BufferedImage;
-
 import mathgame.Vector2D;
-import model.states.GameState;
+import model.Space;
 import ui.Action;
-import view.objetcs.DrawComponent;
-import view.utils.Assets;
-import view.utils.Sound;
+//import view.utils.Assets;
+//import view.utils.Sound;
 
 public class PowerUp extends MovingObject {
 
 	private long duration;
 	private Action action;
-	private Sound powerUpPick;
-	private BufferedImage typeTexture;
+	//private Sound powerUpPick;
+	private PowerUpTypes powerUpType;
 	
-	public PowerUp(Vector2D position, BufferedImage texture, Action action, DrawComponent drawObj, GameState gameState) {
-		super(position, new Vector2D(), 0, Assets.orb, drawObj, gameState);
+	public PowerUp(Vector2D position, Vector2D dimension, Action action, PowerUpTypes powerUpType) {
+		super(position, dimension, new Vector2D(), 0);
 		this.action = action;
-		this.typeTexture = texture;
 		duration = 0;
-		powerUpPick = new Sound(Assets.powerUp);
+		//powerUpPick = new Sound(Assets.powerUp);
+		this.powerUpType = powerUpType;
 	}
 	
-	void executeAction() {
+	public void executeAction() {
 		action.doAction();
-		powerUpPick.play();
+		//powerUpPick.play();
 	}
 
 	@Override
-	public void update(float dt) {
+	public void update(float dt, Space space) {
 		angle += 0.1;
 		duration += dt;
 		
 		if(duration > Constants.POWER_UP_DURATION) {
-			this.destroy();
+			this.destroy(space);
 		}
-		collidesWith();
 	}
 
-	public BufferedImage getTypeTexture() {
-		return typeTexture;
+	@Override
+	public String getType() {
+		return "POWERUP";
+	}
+	
+	public PowerUpTypes getPowerUpType() {
+		return this.powerUpType;
 	}
 }

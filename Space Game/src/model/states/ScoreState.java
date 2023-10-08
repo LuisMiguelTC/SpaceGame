@@ -4,10 +4,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-
-import view.state.DrawStateComponent;
-import view.state.MenuStateComponent;
-import view.utils.Assets;
 import model.JSONParser;
 import model.ScoreData;
 import model.gameobjects.Constants;
@@ -22,18 +18,17 @@ public class ScoreState extends MenuState{
 	private ScoreData[] auxArray;
 
 	
-	public ScoreState(DrawStateComponent drawState) {
-		super(drawState);
+	public ScoreState() {
 		
-		returnButton = super.generalButton
-				.posX(Assets.greyBtn.getHeight())
-				.posY(Constants.HEIGHT - Assets.greyBtn.getHeight() * 2)
+		returnButton = new Button.Builder()
+				.posX(Constants.BUTTON_HEIGHT)
+				.posY(Constants.HEIGHT - Constants.BUTTON_HEIGHT * 2)
 				.text(Constants.RETURN)
 				.action(
 				new Action() {
 					@Override
 					public void doAction() {
-						State.setState(new MenuState(new MenuStateComponent()));
+						State.setState(new MenuState());
 					}
 				})
 				.build();
@@ -68,7 +63,7 @@ public class ScoreState extends MenuState{
 		returnButton.update();
 	}
 	
-	public Button getReturnButton() {
+	public Button getButton() {
 		return this.returnButton;
 	}
 	public PriorityQueue<ScoreData> getHighScores() {
@@ -81,6 +76,8 @@ public class ScoreState extends MenuState{
 		return auxArray;
 	}
 	
-	
-	
+	@Override
+	public String typeState() {
+		return "SCORE";
+	}
 }

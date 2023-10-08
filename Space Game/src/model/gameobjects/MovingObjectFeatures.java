@@ -1,12 +1,15 @@
 package model.gameobjects;
 
-import view.objetcs.DrawMovingObject;
+import model.Space;
 
 public interface MovingObjectFeatures {
 	
-	void updateDraw(DrawMovingObject g);
+	public void collidesWith(Space s);
 	
-	void collidesWith();
+	public boolean isCollides();
 	
-	boolean isDead();
+	public void destroy(Space space);
+	
+	public boolean isDead();
+	
 }

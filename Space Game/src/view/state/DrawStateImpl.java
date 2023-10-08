@@ -15,6 +15,12 @@ import model.states.MenuPauseState;
 import model.states.ScoreState;
 import model.states.State;
 import ui.Button;
+import view.objetcs.DrawAnimation;
+import view.objetcs.DrawAnimationImpl;
+import view.objetcs.DrawButton;
+import view.objetcs.DrawButtonImpl;
+import view.objetcs.DrawMessage;
+import view.objetcs.DrawMessageImpl;
 import view.objetcs.DrawMovingObject;
 import view.objetcs.DrawMovingObjectImpl;
 import view.utils.Assets;
@@ -22,38 +28,80 @@ import view.utils.Text;
 
 public class DrawStateImpl implements DrawState{
 
-	Graphics2D g2;
+	private Graphics2D g2;
+	private String type;
+	private State currentState;
 	
-	public DrawStateImpl(Graphics2D g2) {
+	public DrawStateImpl(State s, Graphics2D g2) {
+		
 		this.g2 = g2;
+		this.currentState = s;
+		this.type = this.currentState.typeState();
 	}
 
 	@Override
-	public void drawInitState(State s) {
+	public void updateStateDraw() {
+		
+		switch(type) {
+		
+		case "MENU":
+			drawMenuState();
+			break;
+		case "GAMESTATE":
+			drawGameState();
+			break;
+		case "INIT":
+			drawInitState();
+			break;
+		case "SCORE":
+			drawScoreState();
+			break;
+		case "PAUSE":
+			drawPauseState();
+			break;
+		default:
+			return;
+		}
+	}
+	
+	@Override
+	public void drawInitState() {
 		g2.drawImage(Assets.inittext, Constants.WIDTH/2 - Assets.inittext.getWidth()/2, 
 				Constants.HEIGHT/2 - Assets.inittext.getHeight()/2 - 150, null);
 	}
 	
 	@Override
-	public void drawMenuState(State s) {
-		MenuState m = (MenuState) s;
+	public void drawMenuState() {
+
+		MenuState m = (MenuState) currentState;
 		g2.drawImage(Assets.menutext, Constants.WIDTH/2 - Assets.menutext.getWidth()/2,
 				Constants.HEIGHT/2 - Assets.menutext.getHeight()/2 - 150, null);
+	
 		for(Button b: m.getButtons()) {
-			b.draw(g2);
+			DrawButton drawButton = new DrawButtonImpl(b,g2);
+			drawButton.updateDrawButton();
 		}
 	}
 
 	@Override
-	public void drawGameState(State s) {
+	public void drawGameState() {
+
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		
-		GameState g = (GameState) s;
-		DrawMovingObject gr = new DrawMovingObjectImpl(g2);
-		g.getSpace().getMovingObjects().forEach(m->{ m.updateDraw(gr);});
-		g.getSpace().getMessages().forEach(m->{m.updateDrawMessage(g2);});
-		g.getSpace().getExplosions().forEach(e -> {g2.drawImage(e.getCurrentFrame(), (int)e.getPosition().getX(), (int)e.getPosition().getY(),
-					null);});
+		GameState g = (GameState) currentState;
+		
+		g.getSpace().getMovingObjects().forEach(m->{ DrawMovingObject drawObj = new DrawMovingObjectImpl(m,g2);
+			drawObj.updateDrawMovingObject();});
+		
+		g.getSpace().getMessages().forEach(m->{ DrawMessage drawMessage = new DrawMessageImpl(m,g2);
+			drawMessage.updateDrawMessage();});
+		
+		g.getSpace().getExplosions().forEach(
+		e -> { 
+		DrawAnimation drawAnimation = new DrawAnimationImpl(e,g2);
+			drawAnimation.updateDrawExplosion();
+			e.setLenght(drawAnimation.getLength());
+			});
 		
 		Vector2D scorePos = new Vector2D(850, 25);
 		String scoreToString = Integer.toString(g.getScore());
@@ -87,18 +135,21 @@ public class DrawStateImpl implements DrawState{
 	}
 
 	@Override
-	public void drawPauseState(State s) {	
-		MenuPauseState p = (MenuPauseState) s;
+	public void drawPauseState() {	
+		
+		MenuPauseState p = (MenuPauseState) currentState;
 		for(Button b: p.getButtons()) {
-			b.draw(g2);
+			DrawButton drawButton = new DrawButtonImpl(b,g2);
+			drawButton.updateDrawButton();
 		}
 	}
 
 	@Override
-	public void drawScoreState(State s) {
+	public void drawScoreState() {
 	
-		ScoreState sc = (ScoreState) s;
-		sc.getReturnButton().draw(g2);
+		ScoreState sc = (ScoreState) currentState;
+		DrawButton drawButton = new DrawButtonImpl(sc.getButton(),g2);
+		drawButton.updateDrawButton();
 		PriorityQueue<ScoreData> highScores = sc.getHighScores();
 		ScoreData[] auxArray = highScores.toArray(new ScoreData[highScores.size()]);
 		Arrays.sort(auxArray, sc.getScoreComparator());

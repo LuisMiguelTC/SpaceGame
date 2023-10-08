@@ -1,6 +1,5 @@
 package model.gameobjects;
 
-import java.awt.image.BufferedImage;
 import mathgame.Vector2D;
 
 public interface GameObjectFeatures {
@@ -9,7 +8,15 @@ public interface GameObjectFeatures {
 	
 	public Vector2D getPosition();
 	
-	public Vector2D getCenter();
+	public void setCenter(Vector2D center);
 	
-	public BufferedImage getTexture();
+	public Vector2D getCenter();
+
+	public void setWidth(double width);
+
+	public double getWidth();
+
+	public void setHeigth(double height);
+
+	public double getHeight();
 }

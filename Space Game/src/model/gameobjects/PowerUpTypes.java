@@ -1,23 +1,16 @@
 package model.gameobjects;
 
-import java.awt.image.BufferedImage;
-
-import view.utils.Assets;
-
-
 public enum PowerUpTypes {
-	SHIELD("SHIELD", Assets.shield),
-	LIFE("+1 LIFE", Assets.life),
-	SCORE_X2("SCORE x2", Assets.doubleScore),
-	FASTER_FIRE("FAST FIRE", Assets.fastFire),
-	SCORE_STACK("+1000 SCORE", Assets.star),
-	DOUBLE_GUN("DOUBLE GUN", Assets.doubleGun);
+	SHIELD("SHIELD"),
+	LIFE("+1 LIFE"),
+	SCORE_X2("SCORE x2"),
+	FASTER_FIRE("FAST FIRE"),
+	SCORE_STACK("+1000 SCORE"),
+	DOUBLE_GUN("DOUBLE GUN");
 	
 	public String text;
-	public BufferedImage texture;
 	
-	private PowerUpTypes(String text, BufferedImage texture){
+	private PowerUpTypes(String text){
 		this.text = text;
-		this.texture = texture;
 	}
 }

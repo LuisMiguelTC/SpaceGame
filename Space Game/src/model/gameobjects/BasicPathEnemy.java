@@ -22,10 +22,7 @@ public class BasicPathEnemy implements EnemyPathStrategy{
 
 	@Override
 	public Vector2D pathFollowing(Enemy e) {
-		
-
 		Vector2D currentNode = e.getPath().get(index);
-		
 		double distanceToNode = currentNode.subtract(e.getCenter()).getMagnitude();
 		
 		if(distanceToNode < Constants.NODE_RADIUS) {

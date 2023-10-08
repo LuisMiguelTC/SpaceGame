@@ -1,20 +1,17 @@
 package model.gameobjects;
 
-import java.awt.image.BufferedImage;
-
-import view.utils.Assets;
+import mathgame.Vector2D;
 
 public enum Size {
 	
-	BIG(2, Assets.meds), MED(2, Assets.smalls), SMALL(2, Assets.tinies), TINY(0, null);
+	BIG(2, new Vector2D(95,80)), MED(2, new Vector2D(43,43)), SMALL(2, new Vector2D(28,28)), TINY(0, new Vector2D(18,18));
 	
 	public int quantity;
+	public Vector2D dimension;
 	
-	public BufferedImage[] textures;
-	
-	private Size(int quantity, BufferedImage[] textures){
+	private Size(int quantity, Vector2D dimension){
 		this.quantity = quantity;
-		this.textures = textures;
+		this.dimension = dimension;
 	}
 	
 }

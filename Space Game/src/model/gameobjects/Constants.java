@@ -24,7 +24,7 @@ public class Constants {
 	public static final double LASER_VEL = 10.0;
 	public static final double LASER_VEL_ENEMY = 8.0;
 	
-	// MeteorImpl properties
+	// Meteor properties
 	
 	public static final double METEOR_INIT_VEL = 1.0;
 	public static final int METEOR_SCORE = 20;
@@ -63,9 +63,7 @@ public class Constants {
 	public static final long DOUBLE_GUN_TIME = 12000;
 	public static final int SCORE_STACK = 1000;
 	
-	
-	
-	
-	
-	
+	//Button properties
+	public static final int BUTTON_WIDTH = 190;
+	public static final int BUTTON_HEIGHT = 49;	
 }

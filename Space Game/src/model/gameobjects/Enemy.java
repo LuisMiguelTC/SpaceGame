@@ -1,54 +1,48 @@
 package model.gameobjects;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-
 import mathgame.Vector2D;
-import model.states.GameState;
-import view.objetcs.DrawComponent;
-import view.objetcs.LaserDrawComponent;
-import view.utils.Assets;
-import view.utils.Sound;
+import model.Space;
+//import view.utils.Assets;
+//import view.utils.Sound;
 
-public class Enemy extends MovingObject {
+public class Enemy extends MovingObject implements EnemyFeatures{
 
 	private ArrayList<Vector2D> path;
 	private boolean following;
 	private long fireRate;
-	private Sound shoot;
+	//private Sound shoot;
 	private EnemyPathStrategy enemyPathStrategy;
 	
-	public Enemy(Vector2D position, Vector2D velocity, double maxVel, BufferedImage texture, DrawComponent drawObj, GameState gameState) {
-		super(position, velocity, maxVel, texture, drawObj, gameState);
+	public Enemy(Vector2D position, Vector2D dimension, Vector2D velocity, double maxVel) {
+		super(position, dimension, velocity, maxVel);
 		
 		path = new ArrayList<Vector2D>();
 		following = true;
 		fireRate = 0;
-		shoot = new Sound(Assets.enemyShoot);
+		//shoot = new Sound(Assets.enemyShoot);
 	}
 	
-	public void pathEnemy(EnemyPathStrategy enemyPath) {
+	@Override
+	public void setpathEnemy(EnemyPathStrategy enemyPath) {
 		this.enemyPathStrategy = enemyPath;
 		enemyPath.pathEnemy(path);
 	}
 	
-	public Vector2D pathFollowing() {
+	@Override
+	public Vector2D getpathFollowing() {
 		return this.enemyPathStrategy.pathFollowing(this);
-	}
-
-	public Vector2D seekForce(Vector2D target) {
-		return this.enemyPathStrategy.seekForce(this, target);
 	}
 	
 	@Override
-	public void update(float dt) {
+	public void update(float dt, Space space) {
 		
 		fireRate += dt;
 		
 		Vector2D pathFollowing;
 		
 		if(following)
-			pathFollowing = pathFollowing();
+			pathFollowing = getpathFollowing();
 		else
 			pathFollowing = new Vector2D();
 			
@@ -60,54 +54,47 @@ public class Enemy extends MovingObject {
 		//shoot
 		if(fireRate > Constants.ENEMY_FIRERATE) {
 			
-			Vector2D toPlayer = gameState.getSpace().getPlayer().getCenter().subtract(getCenter());
-			
+			Vector2D toPlayer = space.getPlayer().getCenter().subtract(getCenter());
 			toPlayer = toPlayer.normalize();
 			
 			double currentAngle = toPlayer.getAngle();
-			
 			currentAngle += Math.random()*Constants.ENEMY_ANGLE_RATE - Constants.ENEMY_ANGLE_RATE / 2;
 			
 			if(toPlayer.getX() < 0)
 				currentAngle = -currentAngle + Math.PI;
 			
 			toPlayer = toPlayer.setDirection(currentAngle);
-			
 			Laser laser = new Laser(
 					getCenter().add(toPlayer.scale(width)),
+					new Vector2D(9.0,54.0),
 					toPlayer,
 					Constants.LASER_VEL_ENEMY,
 					currentAngle + Math.PI/2,
-					Assets.redLaser,
-					new LaserDrawComponent(),
-					gameState
+					"RED"
 					);
-
-			gameState.getSpace().getMovingObjects().add(0, laser); 
+			space.getMovingObjects().add(0, laser); 
 			fireRate = 0;
-			shoot.play();
+			//shoot.play();
 		}
 		
-		if(shoot.getFramePosition() > 8500) {
+		/*if(shoot.getFramePosition() > 8500) {
 			shoot.stop();
-		}
+		}*/
 		angle += 0.05;
-		collidesWith();
 	}
 	
-
 	@Override
-	public void destroy() {
-		gameState.addScore(Constants.ENEMY_SCORE,getPosition());
-		gameState.playExplosion(position);
-		super.destroy();
-	}
-	
 	public ArrayList<Vector2D> getPath() {
 		return path;
 	}
 
+	@Override
 	public void setFollowing(boolean following) {
 		this.following = following;
+	}
+
+	@Override
+	public String getType() {
+		return "ENEMY";
 	}		
 }

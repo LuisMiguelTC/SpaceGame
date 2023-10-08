@@ -1,17 +1,19 @@
 package model.gameobjects;
 
-import java.awt.image.BufferedImage;
-
 import mathgame.Vector2D;
+import model.Space;
 
 public abstract class GameObject implements GameObjectFeatures {
 	
 	protected Vector2D position;
-	private BufferedImage texture;
+	protected Vector2D dimension;
+	protected Vector2D center;
+	protected double width;
+	protected double height;
 	
-	public GameObject(Vector2D position, BufferedImage texture){
+	public GameObject(Vector2D position, Vector2D dimension){
 		this.position = position;
-		this.texture = texture;
+		this.dimension = dimension;
 	}
 	
 	@Override
@@ -25,16 +27,35 @@ public abstract class GameObject implements GameObjectFeatures {
 	}
 
 	@Override
-	public Vector2D getCenter() {
-		return new Vector2D(this.position.getX() + this.getTexture().getWidth()/2, 
-				this.position.getY() + this.getTexture().getHeight()/2);
+	public void setCenter(Vector2D center) {
+		this.center = center;
 	}
 
-	public BufferedImage getTexture() {
-		return this.texture;
+	@Override
+	public Vector2D getCenter() {
+		return this.center = new Vector2D(getPosition().getX() + getWidth()/2, 
+				getPosition().getY() + getHeight()/2);
+	}
+
+	@Override
+	public void setWidth(double width) {
+		this.width = width;
 	}
 	
-	public abstract void update(float dt);
+	@Override
+	public double getWidth() {
+		return this.width = dimension.getX();
+	}
+	@Override
+	public void setHeigth(double height) {
+		this.height = height;
+	}
+	@Override	
+	public double getHeight() {
+		return this.height = dimension.getY();
+	}
+
+	public abstract void update(float dt, Space s);
 
 }
 

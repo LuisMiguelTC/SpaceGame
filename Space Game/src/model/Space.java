@@ -1,32 +1,35 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import model.gameobjects.Enemy;
-import model.gameobjects.MeteorImpl;
+import model.gameobjects.Meteor;
 import model.gameobjects.MovingObject;
-import model.gameobjects.PlayerImpl;
-import view.utils.Animation;
-import view.utils.Message;
+import model.gameobjects.Player;
+import model.utils.Animation;
+import model.utils.Message;
 
 public class Space {
 
-	private PlayerImpl playerImpl;
+	private Player player;
 	private Enemy enemy;
 	private CopyOnWriteArrayList<MovingObject> movingObjects = new CopyOnWriteArrayList<MovingObject>();
 	private CopyOnWriteArrayList<Animation> explosions = new CopyOnWriteArrayList<Animation>();
-	private ArrayList<Message> messages = new ArrayList<Message>();
+	private CopyOnWriteArrayList<Message> messages = new CopyOnWriteArrayList<Message>();
 	private int count;
+	private SpaceEventListener listener;
 	
-	public void setPlayer(PlayerImpl p) {
-		playerImpl = p;
+	public void setEventListener(SpaceEventListener l) {
+		this.listener = l;
 	}
 
 	public void addGameObject(MovingObject mo) {
 		movingObjects.add(mo);
 	}
 
+	public void removeMovingObject(MovingObject collisionMObj) {
+		movingObjects.remove(collisionMObj);
+	}
+	
 	public void addGameMessages(Message m) {
 		messages.add(m);
 	}
@@ -37,40 +40,27 @@ public class Space {
 
 	public void updateSpace(float dt) {
 		
-		for(int i = 0; i < movingObjects.size(); i++) {
+		movingObjects.forEach(mo->{
+			mo.update(dt, this);
+			mo.collidesWith(this);
+			if(mo.isDead() && (mo instanceof Enemy || mo instanceof Meteor))
+				this.count++;});
 			
-			MovingObject mo = movingObjects.get(i);
-			mo.update(dt);
-			if(mo.isDead()) {
-				movingObjects.remove(i);
-				i--;
-			}
-			
-			if(mo.isDead() && (mo instanceof Enemy || mo instanceof MeteorImpl))
-				this.count++;
-		}
-			
-		for(int i = 0; i < explosions.size(); i++){
-			Animation anim = explosions.get(i);
+		explosions.forEach(anim ->{
 			anim.updateAnimation(dt);
 			if(!anim.isRunning()){
-				explosions.remove(i);
-			}
-		}
+				explosions.remove(0);}});
 		
-		for(int i = 0; i < messages.size(); i++) {
-			Message mess = messages.get(i);
-			if(mess.isDead()) {
-				messages.remove(i);
-			}
-		}
+		messages.forEach(mess->{
+			if(mess.isDead())
+				messages.remove(0);});
 	}
 	
 	public CopyOnWriteArrayList<MovingObject> getMovingObjects() {
 		return movingObjects;
 	}
 	
-	public ArrayList<Message> getMessages() {
+	public CopyOnWriteArrayList<Message> getMessages() {
 		return messages;
 	}
 	
@@ -78,22 +68,15 @@ public class Space {
 		return explosions;
 	}
 
-	public PlayerImpl getPlayer() {
-		for(MovingObject p: movingObjects) {
-			if(p instanceof PlayerImpl) {
-				playerImpl = (PlayerImpl) p;
-			}
-		}
-		return playerImpl;
+	public Player getPlayer() {
+		movingObjects.forEach(p->{if(p instanceof Player)
+			player = (Player) p;});
+		return player;
 	}
 
 	public Enemy getEnemy() {
-		
-		for(MovingObject e: movingObjects) {
-			if(e instanceof Enemy) {
-				enemy = (Enemy) e;
-			}
-		}
+		movingObjects.forEach(e->{if(e instanceof Enemy)
+			enemy = (Enemy) e;});
 		return enemy;
 	}
 	
@@ -101,4 +84,7 @@ public class Space {
 		return count;
 	}
 	
+	public void notifyEventListener(SpaceEvent ev) {
+		listener.notifyEvent(ev);
+	}
 }

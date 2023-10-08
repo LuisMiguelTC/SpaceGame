@@ -1,8 +1,5 @@
 package model;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class ScoreData {
 	
 	private String date;
@@ -15,9 +12,6 @@ public class ScoreData {
 		this.score = score;
 		this.name = name;
 		this.enemydestroyed = enemydestroyed;
-		Date today = new Date(System.currentTimeMillis());
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		date = format.format(today);
 	}
 	
 	public ScoreData() {	

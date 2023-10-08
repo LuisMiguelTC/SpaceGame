@@ -5,56 +5,46 @@ import java.util.ArrayList;
 import model.gameobjects.Constants;
 import ui.Action;
 import ui.Button;
-import ui.Button.Builder;
-import view.state.DrawStateComponent;
-import view.state.InitStateComponent;
 import view.state.InsertNamePlayer;
-import view.state.ScoreStateComponent;
-import view.utils.Assets;
 
 public class MenuState extends State{
 
 	protected Button button1, button2, button3;
-	protected Builder generalButton;
 	protected ArrayList<Button> buttons;
 	
-	public MenuState(DrawStateComponent drawState) {
-		super(drawState);
-		
-		generalButton = new Button.Builder().mouseInImg(Assets.yellowBtn)
-				.mouseOutImg(Assets.greyBtn);
+	public MenuState() {
 		
 		buttons = new ArrayList<Button>();
 		
-		buttons.add(button1 = generalButton
-				.posX(Constants.WIDTH / 2 - Assets.greyBtn.getWidth()/2)
-				.posY(Constants.HEIGHT / 2 - Assets.greyBtn.getHeight() * 2)
+		buttons.add(button1 = new Button.Builder()
+				.posX(Constants.WIDTH / 2 - Constants.BUTTON_WIDTH/2)
+				.posY(Constants.HEIGHT / 2 - Constants.BUTTON_HEIGHT * 2)
 				.text(Constants.PLAY)
 				.action(new Action() {
 					
 					@Override
 					public void doAction() {
 						new InsertNamePlayer();
-						State.setState(new InitState(new InitStateComponent()));
+						State.setState(new InitState());
 					}
 				})
 				.build());
 		
-		buttons.add(button2 = generalButton
-				.posX(Constants.WIDTH / 2 - Assets.greyBtn.getWidth()/2)
+		buttons.add(button2 = new Button.Builder()
+				.posX(Constants.WIDTH / 2 - Constants.BUTTON_WIDTH/2)
 				.posY(Constants.HEIGHT / 2)
 				.text(Constants.HIGH_SCORES)
 				.action(new Action() {
 					@Override
 					public void doAction() {
-						State.setState(new ScoreState(new ScoreStateComponent()));
+						State.setState(new ScoreState());
 					}
 				})
 				.build());
 		
-		buttons.add(button3 = generalButton
-				.posX(Constants.WIDTH / 2 - Assets.greyBtn.getWidth()/2)
-				.posY(Constants.HEIGHT / 2 + Assets.greyBtn.getHeight() * 2)
+		buttons.add(button3 = new Button.Builder()
+				.posX(Constants.WIDTH / 2 - Constants.BUTTON_WIDTH/2)
+				.posY(Constants.HEIGHT / 2 + Constants.BUTTON_HEIGHT * 2)
 				.text(Constants.EXIT)
 				.action(new Action() {
 					@Override
@@ -63,6 +53,7 @@ public class MenuState extends State{
 					}
 				})
 				.build());
+		
 	}
 	
 	@Override
@@ -74,5 +65,10 @@ public class MenuState extends State{
 
 	public ArrayList<Button> getButtons() {
 		return buttons;
+	}
+
+	@Override
+	public String typeState() {
+		return "MENU";
 	}
 }

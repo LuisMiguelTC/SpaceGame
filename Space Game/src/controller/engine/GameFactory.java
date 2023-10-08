@@ -1,19 +1,17 @@
 package controller.engine;
 
-import java.awt.Color;
-
 import mathgame.Vector2D;
 import model.gameobjects.Constants;
 import model.gameobjects.Enemy;
 import model.gameobjects.MovingObject;
-import model.gameobjects.PlayerImpl;
-import model.states.GameState;
-import view.objetcs.EnemyDrawComponent;
-import view.objetcs.PlayerDrawComponent;
-import view.utils.Assets;
-import view.utils.Message;
+import model.gameobjects.Player;
+import model.utils.ColorMessage;
+import model.utils.Message;
 
 public class GameFactory {
+	
+	public Vector2D PLAYER_START_POSITION = new Vector2D(Constants.WIDTH/2 - 38/2,
+			Constants.HEIGHT/2 - 38/2);
 	
 	static private GameFactory instance;
 		
@@ -24,19 +22,19 @@ public class GameFactory {
 		return instance;
 	}
 		
-	public MovingObject createPlayer(Vector2D pos, GameState g){
-		return new PlayerImpl(pos, new Vector2D(), Constants.PLAYER_MAX_VEL, Assets.player, new PlayerDrawComponent(), g);			
+	public MovingObject createPlayer(){
+		return new Player(PLAYER_START_POSITION, new Vector2D(38.0,38.0),new Vector2D(), Constants.PLAYER_MAX_VEL);			
 	}
 	
-	public Message createActionGameMessage(Vector2D pos, String text, Color c) {
-		return new Message(pos, false, text, c, true, Assets.fontMed);
+	public Message createActionGameMessage(Vector2D pos, String text, ColorMessage c) {
+		return new Message(pos, false, text, c, true, "MED");
 	}
 	
-	public Message createGameMessage(Vector2D pos, boolean fade, String text, Color c) {
-		return new Message(pos, fade, text, c, true, Assets.fontBig);
+	public Message createGameMessage(Vector2D pos, boolean fade, String text, ColorMessage c) {
+		return new Message(pos, fade, text, c, true, "BIG");
 	}
 	
-	public Enemy createEnemy(Vector2D pos, GameState g) {
-		return new Enemy(pos, new Vector2D(), Constants.ENEMY_MAXVEL, Assets.enemy,new EnemyDrawComponent(), g);
+	public Enemy createEnemy(Vector2D pos, Vector2D dimension) {
+		return new Enemy(pos, dimension, new Vector2D(), Constants.ENEMY_MAXVEL);
 	}
 }

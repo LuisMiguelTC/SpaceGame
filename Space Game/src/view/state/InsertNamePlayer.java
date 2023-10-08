@@ -18,11 +18,7 @@ import view.utils.Assets;
 
 public class InsertNamePlayer extends JFrame{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-
 	private String namePlayerDefault = "UknownPlayer";
 	
 	public InsertNamePlayer() {
@@ -58,7 +54,7 @@ public class InsertNamePlayer extends JFrame{
 				if(namePlayer.isEmpty())
 					namePlayer = namePlayerDefault;
 				setVisible(false);
-				State.setState(new GameState(namePlayer,new GameStateComponent()));
+				State.setState(new GameState(namePlayer));
 			}
 			
 		});

@@ -4,7 +4,6 @@ import model.states.MenuState;
 import model.states.State;
 import view.GameView;
 import view.GameWindow;
-import view.state.MenuStateComponent;
 import view.utils.Assets;
 
 public class GameController implements Controller{
@@ -29,7 +28,7 @@ public class GameController implements Controller{
 	private void init(){
 		
 		Assets.init();
-		State.setState(new MenuState(new MenuStateComponent()));
+		State.setState(new MenuState());
 	}
 	
 	private void loopGame() {
@@ -47,7 +46,7 @@ public class GameController implements Controller{
 			lastTime = now;	
 			
 			if(delta >= 1){
-				view.updateController();
+				view.updateControllerInput();
 				updateState(period);
 				view.render();
 				delta --;
@@ -56,7 +55,7 @@ public class GameController implements Controller{
 				
 			if(time >= 1000000000)
 			{
-				AVERAGEFPS = frames;
+				this.AVERAGEFPS = frames;
 				frames = 0;
 				time = 0;	
 			}

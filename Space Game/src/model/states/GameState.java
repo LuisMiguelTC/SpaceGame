@@ -1,73 +1,74 @@
 package model.states;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import controller.engine.GameFactory;
 import input.GameKeyboard;
 import mathgame.Vector2D;
+import model.HitEvent;
 import model.JSONParser;
 import model.ScoreData;
 import model.Space;
+import model.SpaceEvent;
+import model.SpaceEventListener;
 import model.gameobjects.BasicPathEnemy;
 import model.gameobjects.Constants;
-import model.gameobjects.MeteorImpl;
+import model.gameobjects.Enemy;
+import model.gameobjects.Laser;
+import model.gameobjects.Meteor;
+import model.gameobjects.MovingObject;
+import model.gameobjects.Player;
 import model.gameobjects.PowerUp;
 import model.gameobjects.PowerUpTypes;
 import model.gameobjects.Size;
+import model.utils.Animation;
+import model.utils.ColorMessage;
 import ui.Action;
-import view.objetcs.EnemyDrawComponent;
-import view.objetcs.PowerUpDrawComponent;
-import view.state.DrawStateComponent;
-import view.state.MenuStateComponent;
-import view.state.PauseStateComponent;
-import view.utils.Animation;
-import view.utils.Assets;
-import view.utils.Sound;
+//import view.utils.Assets;
+//import view.utils.Sound;
 
-public class GameState extends State {
-	
-	public static final Vector2D PLAYER_START_POSITION = new Vector2D(Constants.WIDTH/2 - Assets.player.getWidth()/2,
-			Constants.HEIGHT/2 - Assets.player.getHeight()/2);
+public class GameState extends State implements SpaceEventListener{
+
 	private Space space;
 	private int score = 0;
 	private int lives = 5;
 	private int waves = 1;
 	private int meteors = 1;
-	private Sound backgroundMusic;
 	private long gameOverTimer;
 	private long enemySpawner;
 	private long powerUpSpawner;
 	private String namePlayer;
 	private GameFactory f;
+	//private Sound backgroundMusic;
+	private LinkedList<SpaceEvent> eventQueue;
 	
-	public GameState(String namePlayer, DrawStateComponent drawState) {
-		super(drawState);
+	public GameState(String namePlayer) {
 		
+		this.eventQueue = new LinkedList<SpaceEvent>();
 		this.f = GameFactory.getInstance();
 		this.namePlayer = namePlayer;
 		this.space = new Space();
-		this.space.addGameObject(f.createPlayer(PLAYER_START_POSITION, this));
-		this.space.addGameMessages(f.createGameMessage(new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2),false, "START GAME", Color.YELLOW));
-		
-		backgroundMusic = new Sound(Assets.backgroundMusic);
+		this.space.addGameObject(f.createPlayer());
+		this.space.addGameMessages(f.createGameMessage(new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2),
+				false, "START GAME", ColorMessage.YELLOW));
+		this.space.setEventListener(this);
+		/*backgroundMusic = new Sound(Assets.backgroundMusic);
 		backgroundMusic.loop();
-		backgroundMusic.changeVolume(-20.0f);
+		backgroundMusic.changeVolume(-20.0f);*/
 		
 		gameOverTimer  = 0;
 		enemySpawner = 0;
 		powerUpSpawner = 0;	
 	}
 	
-	
 	public void addScore(int value, Vector2D position) {
 		
-		Color c = Color.WHITE;
+		ColorMessage c = ColorMessage.WHITE; 
 		String text = "+" + value + " score";
 		if(space.getPlayer().isDoubleScoreOn()){
-			c = Color.YELLOW;
+			c = ColorMessage.YELLOW;
 			value = value * 2;
 			text = "+" + value + " score";
 		}
@@ -75,42 +76,9 @@ public class GameState extends State {
 		space.addGameMessages(f.createActionGameMessage(position, text, c));
 	}
 	
-	public void divideMeteor(MeteorImpl meteorImpl) {
-		
-		Size size = meteorImpl.getSize();
-		BufferedImage[] textures = size.textures;
-		Size newSize = null;
-		
-		switch(size){
-		case BIG:
-			newSize =  Size.MED;
-			break;
-		case MED:
-			newSize = Size.SMALL;
-			break;
-		case SMALL:
-			newSize = Size.TINY;
-			break;
-		default:
-			return;
-		}
-			
-		for(int i = 0; i < size.quantity; i++) {
-			space.addGameObject(new MeteorImpl(
-					meteorImpl.getPosition(),
-					new Vector2D(0, 1).setDirection(Math.random()*Math.PI*2),
-					Constants.METEOR_INIT_VEL*Math.random() + 1,
-					textures[(int)(Math.random()*textures.length)],
-					new EnemyDrawComponent(),
-					this,
-					newSize
-					));
-		}
-	}
-	
-	private void startWave() {
+	public void startWave() {
 		space.addGameMessages(f.createGameMessage(new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2 + 50), false, 
-				"WAVE " + waves, Color.WHITE));
+				"WAVE " + waves, ColorMessage.WHITE));
 
 		double x, y;
 		for(int i = 0; i < meteors; i++){
@@ -118,44 +86,35 @@ public class GameState extends State {
 			x = i % 2 == 0 ? Math.random()*Constants.WIDTH : 0;
 			y = i % 2 == 0 ? 0 : Math.random()*Constants.HEIGHT;
 			
-			BufferedImage texture = Assets.bigs[(int)(Math.random()*Assets.bigs.length)];
+			int randomMeteor = (int)(Math.random()*3);
 			
-			space.addGameObject(new MeteorImpl(
+			space.addGameObject(new Meteor(
 					new Vector2D(x, y),
+					new Vector2D(95,80),
 					new Vector2D(0, 1).setDirection(Math.random()*Math.PI*2),
 					Constants.METEOR_INIT_VEL*Math.random() + 1,
-					texture,
-					new EnemyDrawComponent(),
-					this,
+					randomMeteor,
 					Size.BIG
 					));
 		}
 		meteors ++;
 		waves++;
 	}
-	
-	public void playExplosion(Vector2D position) {
-		space.addAnimations((new Animation(
-				Assets.exp,
-				50,
-				position.subtract(new Vector2D(Assets.exp[0].getWidth()/2, Assets.exp[0].getHeight()/2))
-				)));
-	}
-	
-	private void spawnEnemy() {
+
+	public void spawnEnemy() {
 		
 		int rand = (int) (Math.random()*2);
 		double x = rand == 0 ? (Math.random()*Constants.WIDTH): Constants.WIDTH;
 		double y = rand == 0 ? Constants.HEIGHT : (Math.random()*Constants.HEIGHT);
 		
-		space.addGameObject(f.createEnemy(new Vector2D(x, y),this));
-		space.getEnemy().pathEnemy(new BasicPathEnemy());	
+		space.addGameObject(f.createEnemy(new Vector2D(x, y), new Vector2D(55,55)));
+		space.getEnemy().setpathEnemy(new BasicPathEnemy());	
 	}
 
-	private void spawnPowerUp() {
+	public void spawnPowerUp() {
 		
-		final int x = (int) ((Constants.WIDTH - Assets.orb.getWidth()) * Math.random());
-		final int y = (int) ((Constants.HEIGHT - Assets.orb.getHeight()) * Math.random());
+		final int x = (int) ((Constants.WIDTH - 20)* Math.random());
+		final int y = (int) ((Constants.HEIGHT -20)* Math.random());
 		int index = (int) (Math.random() * (PowerUpTypes.values().length));
 		
 		PowerUpTypes p = PowerUpTypes.values()[index];
@@ -169,7 +128,7 @@ public class GameState extends State {
 				@Override
 				public void doAction() {
 					lives ++;
-					space.addGameMessages(f.createActionGameMessage(position, text, Color.GREEN));
+					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.GREEN));
 				}
 			};
 			break;
@@ -178,7 +137,7 @@ public class GameState extends State {
 				@Override
 				public void doAction() {
 					space.getPlayer().setShield();
-					space.addGameMessages(f.createActionGameMessage(position, text, Color.DARK_GRAY));
+					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.DARK_GRAY));
 				}
 			};
 			break;
@@ -187,7 +146,7 @@ public class GameState extends State {
 				@Override
 				public void doAction() {
 					space.getPlayer().setDoubleScore();
-					space.addGameMessages(f.createActionGameMessage(position, text, Color.YELLOW));
+					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.YELLOW));
 				}
 			};
 			break;
@@ -196,7 +155,7 @@ public class GameState extends State {
 				@Override
 				public void doAction() {
 					space.getPlayer().setFastFire();
-					space.addGameMessages(f.createActionGameMessage(position, text, Color.BLUE));
+					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.BLUE));
 				}
 			};
 			break;
@@ -205,7 +164,7 @@ public class GameState extends State {
 				@Override
 				public void doAction() {
 					score += 1000;
-					space.addGameMessages(f.createActionGameMessage(position, text, Color.MAGENTA));
+					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.MAGENTA));
 				}
 			};
 			break;
@@ -214,7 +173,7 @@ public class GameState extends State {
 				@Override
 				public void doAction() {
 					space.getPlayer().setDoubleGun();
-					space.addGameMessages(f.createActionGameMessage(position, text, Color.ORANGE));
+					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.ORANGE));
 				}
 			};
 			break;
@@ -224,21 +183,20 @@ public class GameState extends State {
 		
 		this.space.addGameObject(new PowerUp(
 				position,
-				p.texture,
-				action, 
-				new PowerUpDrawComponent(),
-				this
+				new Vector2D(64,64),
+				action,
+				p
 				));
-
 	}
 	
 	public void update(float dt){
 		
-		if(GameKeyboard.PAUSE) 
-			State.setState(new MenuPauseState(this, new PauseStateComponent()));
-		
 		space.updateSpace(dt);
-		//checkEvents.checkEvent(this, events);
+		CheckEvents();
+		
+		if(GameKeyboard.PAUSE) 
+			State.setState(new MenuPauseState(this));
+	
 		if(isGameOver())
 			gameOverTimer += dt;
 	
@@ -253,8 +211,8 @@ public class GameState extends State {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			backgroundMusic.stop();
-			State.setState(new MenuState(new MenuStateComponent()));
+			//backgroundMusic.stop();
+			State.setState(new MenuState());
 		}
 		
 		if(powerUpSpawner > Constants.POWER_UP_SPAWN_TIME) {
@@ -268,7 +226,7 @@ public class GameState extends State {
 		}
 		
 		for(int i = 0; i < space.getMovingObjects().size(); i++)
-			if(space.getMovingObjects().get(i) instanceof MeteorImpl)
+			if(space.getMovingObjects().get(i) instanceof Meteor)
 				return;
 		
 		startWave();
@@ -290,19 +248,71 @@ public class GameState extends State {
 		return this.namePlayer;
 	}
 	
-	public boolean subtractLife() {
+	private boolean subtractLife() {
 		lives --;
 		if(lives > 0) {
-			space.addGameMessages(f.createActionGameMessage(new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2), "-1 LIFE", Color.RED));	
+			space.addGameMessages(f.createActionGameMessage(
+					new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2), "-1 LIFE", ColorMessage.RED));	
 		}
 		return lives > 0;
 	}
 	
-	public void gameOver() {
-		space.addGameMessages(f.createGameMessage(new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2), true, "GAME OVER", Color.WHITE));	
+	private void gameOverMessage() {
+		space.addGameMessages(f.createGameMessage(new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2), true, "GAME OVER", ColorMessage.WHITE));	
 	}
 	
 	public boolean isGameOver() {
 		return lives == 0; 
+	}
+	
+	public void CheckEvents() {
+		Space space = this.getSpace();
+		eventQueue.stream().forEach(ev->{
+			if(ev instanceof HitEvent) {
+				HitEvent hitevent = (HitEvent) ev;
+				MovingObject mo = hitevent.getCollisionMObj();
+				if(mo instanceof Player) {
+					this.playExplosion(mo.getPosition());
+					Player p = (Player) mo;
+					if(!this.subtractLife()) {
+						space.removeMovingObject(mo);
+						this.gameOverMessage();
+					}
+					p.resetValues();
+				}
+				else {
+					
+					space.removeMovingObject(mo);
+					if(!(mo instanceof Laser) && !(mo instanceof PowerUp)) {
+						this.playExplosion(mo.getPosition());
+						
+						if(mo instanceof Enemy)
+							this.addScore(Constants.ENEMY_SCORE, mo.getPosition());
+						else if (mo instanceof Meteor) {
+							((Meteor) mo).setIsDivided(true);
+							((Meteor) mo).divideMeteor(space);
+							this.addScore(Constants.METEOR_SCORE, mo.getPosition());
+						}
+					}
+				}	
+			}	
+		});
+		eventQueue.clear();
+	}
+
+	private void playExplosion(Vector2D position) {
+		space.addAnimations(new Animation(
+				50,
+				position.subtract(new Vector2D (60/2, 62/2))));
+	}
+	
+	@Override
+	public void notifyEvent(SpaceEvent ev) {
+		eventQueue.add(ev);
+	}	
+	
+	@Override
+	public String typeState() {
+		return "GAMESTATE";
 	}
 }

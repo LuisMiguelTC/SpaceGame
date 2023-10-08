@@ -1,16 +1,17 @@
 package view.state;
 
-import model.states.State;
-
 public interface DrawState {
 	
-	public void drawInitState(State s);
+	public void updateStateDraw();
 	
-	public void drawMenuState(State s);
+	public void drawInitState();
 	
-	public void drawGameState(State  s);
+	public void drawMenuState();
 	
-	public void drawPauseState(State s);
+	public void drawGameState();
 	
-	public void drawScoreState(State s);
+	public void drawPauseState();
+	
+	public void drawScoreState();
+
 }
