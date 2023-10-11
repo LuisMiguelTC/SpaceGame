@@ -296,7 +296,7 @@ public class GameStateTest {
 		player.destroy(space);
 		gameState.update(3500);
 		assertEquals(0, gameState.getNumberLives());
-		//avendo generato il gameOver quindi si suppone che i dati siano
+		//avendo generato il gameOver si suppone che i dati siano
 		//presenti nel file data.Json
 		MenuState menuState = (MenuState) State.getCurrentState().get();
 		menuState.getButtons().get(1).getAction().doAction();
