@@ -12,10 +12,10 @@ import view.utils.Text;
 
 public class DrawMessageImpl implements DrawMessage{
 
-	Graphics2D g2d;
-	Message m;
-	Font font;
-	Color color;
+	private Graphics2D g2d;
+	private Message m;
+	private Font font;
+	private Color color;
 	
 	public DrawMessageImpl(Message m, Graphics2D g2) {
 		this.m = m;

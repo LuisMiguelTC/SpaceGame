@@ -124,8 +124,6 @@ public class Assets {
 		star = loadImage("/powers/star.png");
 		shield = loadImage("/powers/shield.png");
 		
-		// ===========================================================
-		
 		loaded = true;
 		
 	}

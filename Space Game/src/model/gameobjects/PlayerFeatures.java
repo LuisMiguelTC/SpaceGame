@@ -1,10 +1,13 @@
 package model.gameobjects;
 
+import mathgame.Vector2D;
 import model.utils.Animation;
 
 public interface PlayerFeatures {
 	
 	public boolean isAccelerating();
+	
+	public Vector2D getVelocity();
 	
 	public boolean isVisible();
 	

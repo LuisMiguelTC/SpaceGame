@@ -41,7 +41,7 @@ public class GameView extends JPanel implements View{
 	}
 	
 	@Override
-	public void updateControllerInput() {
+	public void updateInput() {
 		gameKeyboard.update();	
 	}	
 	
@@ -69,7 +69,7 @@ public class GameView extends JPanel implements View{
 		g2.drawImage(Assets.background, 0,0, null);
 		
 		
-		State current = gameController.getState(State.getCurrentState().get());
+		State current = gameController.getModelState(State.getCurrentState().get());
 		DrawState drawState = new DrawStateImpl(current,g2);
 		drawState.updateStateDraw();
 	}

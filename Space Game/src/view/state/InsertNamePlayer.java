@@ -62,6 +62,14 @@ public class InsertNamePlayer extends JFrame{
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
-		
 	}
+
+	public String getNamePlayer() {
+		return namePlayerDefault;
+	}
+
+	public void setNamePlayer(String newNamePlayer) {
+		this.namePlayerDefault = newNamePlayer;
+	}
+	
 }

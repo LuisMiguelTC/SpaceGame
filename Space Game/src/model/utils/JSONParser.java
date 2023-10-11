@@ -1,4 +1,4 @@
-package model;
+package model.utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,7 +39,6 @@ public class JSONParser {
 			data.setEnemydestroyed(obj.getInt("count"));
 			dataList.add(data);
 		}
-		
 		return dataList;
 	}
 	
@@ -59,9 +58,9 @@ public class JSONParser {
 			obj.put("name", data.getName());
 			obj.put("score", data.getScore());
 			obj.put("count", data.getEnemydestroyed());
-			jsonList.put(obj);
-			
+			jsonList.put(obj);	
 		}
+		
 		BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile.toURI()));
 		jsonList.write(writer);
 		writer.close();

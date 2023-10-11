@@ -7,13 +7,13 @@ import java.awt.RenderingHints;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 import mathgame.Vector2D;
-import model.ScoreData;
 import model.gameobjects.Constants;
 import model.states.GameState;
 import model.states.MenuState;
-import model.states.MenuPauseState;
+import model.states.PauseState;
 import model.states.ScoreState;
 import model.states.State;
+import model.utils.ScoreData;
 import ui.Button;
 import view.objetcs.DrawAnimation;
 import view.objetcs.DrawAnimationImpl;
@@ -137,7 +137,7 @@ public class DrawStateImpl implements DrawState{
 	@Override
 	public void drawPauseState() {	
 		
-		MenuPauseState p = (MenuPauseState) currentState;
+		PauseState p = (PauseState) currentState;
 		for(Button b: p.getButtons()) {
 			DrawButton drawButton = new DrawButtonImpl(b,g2);
 			drawButton.updateDrawButton();

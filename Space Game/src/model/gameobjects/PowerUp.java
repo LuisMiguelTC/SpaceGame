@@ -35,7 +35,7 @@ public class PowerUp extends MovingObject {
 			this.destroy(space);
 		}
 	}
-
+	
 	@Override
 	public String getType() {
 		return "POWERUP";

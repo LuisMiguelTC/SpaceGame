@@ -93,7 +93,7 @@ public abstract class MovingObject extends GameObject implements MovingObjectFea
 	}
 	
 	@Override
-	public boolean isDead() {
+	public boolean isDead(){	
 		return Dead;
 	}
 	

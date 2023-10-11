@@ -46,8 +46,8 @@ public class GameController implements Controller{
 			lastTime = now;	
 			
 			if(delta >= 1){
-				view.updateControllerInput();
-				updateState(period);
+				view.updateInput();
+				updateModelState(period);
 				view.render();
 				delta --;
 				frames ++;
@@ -60,10 +60,12 @@ public class GameController implements Controller{
 				time = 0;	
 			}
 		}
+		if(State.getCurrentState().isEmpty())
+			System.exit(0);
 	}
 	
 	@Override
-	public void updateState(float dt) {
+	public void updateModelState(float dt) {
 		State.getCurrentState().get().update(dt);
 	}
 	
@@ -73,7 +75,7 @@ public class GameController implements Controller{
 	}
 	
 	@Override
-	public State getState(State s) {
+	public State getModelState(State s) {
 		return s;
 	}
 }

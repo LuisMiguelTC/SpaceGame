@@ -13,6 +13,7 @@ public class Player extends MovingObject implements PlayerFeatures{
 	private Vector2D heading;	
 	private Vector2D acceleration;
 	private Vector2D initialPosition;
+	private Vector2D temPosition;
 	private boolean accelerating = false;
 	private boolean shooting;
 	private long fireRate, fireSpeed;
@@ -20,6 +21,7 @@ public class Player extends MovingObject implements PlayerFeatures{
 	private long spawnTime, flickerTime, shieldTime, doubleScoreTime, fastFireTime, doubleGunTime;
 	private boolean shieldOn, doubleScoreOn, fastFireOn, doubleGunOn;
 	private Animation shieldEffect;
+	private long decelerationTime;
 	
 	
 	
@@ -27,12 +29,14 @@ public class Player extends MovingObject implements PlayerFeatures{
 		super(position, dimension, velocity, maxVel);
 		
 		initialPosition = position;
-		heading = new Vector2D(0, 1);
+		heading = new Vector2D(0,1);
 		acceleration = new Vector2D();
+		temPosition = new Vector2D();
 		fireRate = 0;
 		spawnTime = 0;
 		flickerTime = 0;
 		shieldTime = 0;
+		decelerationTime = 0;
 		fastFireTime = 0;
 		doubleGunTime = 0;
 		shooting = false;
@@ -45,6 +49,8 @@ public class Player extends MovingObject implements PlayerFeatures{
 	
 	@Override
 	public void update(float dt, Space space) {
+		
+		temPosition = position;
 		
 		fireRate += dt;
 		
@@ -137,7 +143,6 @@ public class Player extends MovingObject implements PlayerFeatures{
 			fireRate = 0;	
 			//shoot.play();
 		}
-		//System.out.println(shoot.getFramePosition());
 		
 		/*if(shoot.getFramePosition() > 8500) {
 			shoot.stop();
@@ -147,20 +152,34 @@ public class Player extends MovingObject implements PlayerFeatures{
 			angle += Constants.DELTAANGLE;
 		if(GameKeyboard.LEFT)
 			angle -= Constants.DELTAANGLE;
+	
+		
 		
 		if(GameKeyboard.UP){
-			acceleration = heading.scale(Constants.ACC);
 			accelerating = true;
+			acceleration = heading.scale(Constants.ACC);	
+			velocity = velocity.add(acceleration);
+			velocity = velocity.limit(maxVel);
+			temPosition = temPosition.add(velocity);
+			
 		}else{
-			if(velocity.getMagnitude() != 0)
-				acceleration = (velocity.scale(-1).normalize()).scale(Constants.ACC/15);
 			accelerating = false;
+			decelerationTime += dt;
+			
+			if(velocity.getMagnitude() != 0 ) {
+				acceleration = (velocity.scale(-1).normalize()).scale(Constants.DEC);
+				velocity = velocity.add(acceleration);
+				temPosition = temPosition.add(velocity);
+			}
 		}
 		
-		velocity = velocity.add(acceleration);
-		velocity = velocity.limit(maxVel);
+		if (decelerationTime > Constants.DECELERATION_TIME) {
+			velocity = new Vector2D();
+			decelerationTime = 0;
+		}
+		
 		heading = heading.setDirection(angle - Math.PI/2);
-		position = position.add(velocity);
+		position = temPosition;
 		
 		if(position.getX() > Constants.WIDTH)
 			position.setX(0);
@@ -176,6 +195,11 @@ public class Player extends MovingObject implements PlayerFeatures{
 			shieldEffect.updateAnimation(dt);
 	}
 
+	@Override
+	public Vector2D getVelocity() {
+		return this.velocity;
+	}
+	
 	@Override
 	public void setShield() {
 		if(shieldOn)
@@ -195,6 +219,11 @@ public class Player extends MovingObject implements PlayerFeatures{
 		if(fastFireOn)
 			fastFireTime = 0;
 		fastFireOn = true;
+	}
+	
+	@Override
+	public void setFireRate(long fireRate) {
+		this.fireRate = fireRate;
 	}
 	
 	@Override
@@ -267,10 +296,5 @@ public class Player extends MovingObject implements PlayerFeatures{
 	@Override
 	public String getType() {
 		return "PLAYER";
-	}
-
-	@Override
-	public void setFireRate(long fireRate) {
-		this.fireRate = fireRate;
 	}
 }

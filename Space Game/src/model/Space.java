@@ -18,6 +18,7 @@ public class Space {
 	private int count;
 	private SpaceEventListener listener;
 	
+	
 	public void setEventListener(SpaceEventListener l) {
 		this.listener = l;
 	}
@@ -74,13 +75,15 @@ public class Space {
 		return player;
 	}
 
-	public Enemy getEnemy() {
+	public Enemy getEnemy() throws IllegalStateException {
 		movingObjects.forEach(e->{if(e instanceof Enemy)
 			enemy = (Enemy) e;});
-		return enemy;
+		if(enemy == null)
+			throw new IllegalStateException();
+		return enemy;	
 	}
-	
-	public int getCountEnemyDied() {
+
+	public int getCountEnemiesDied() {
 		return count;
 	}
 	

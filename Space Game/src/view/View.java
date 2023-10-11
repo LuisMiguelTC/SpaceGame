@@ -4,5 +4,5 @@ public interface View {
 
 	public void render();
 	
-	public void updateControllerInput();
+	public void updateInput();
 }

@@ -10,7 +10,7 @@ import model.utils.Message;
 
 public class GameFactory {
 	
-	public Vector2D PLAYER_START_POSITION = new Vector2D(Constants.WIDTH/2 - 38/2,
+	private Vector2D PLAYER_START_POSITION = new Vector2D(Constants.WIDTH/2 - 38/2,
 			Constants.HEIGHT/2 - 38/2);
 	
 	static private GameFactory instance;

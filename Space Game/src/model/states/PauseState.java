@@ -3,9 +3,9 @@ package model.states;
 import model.gameobjects.Constants;
 import ui.*;
 
-public class MenuPauseState extends MenuState{
+public class PauseState extends MenuState{
 		
-	public MenuPauseState(GameState currentGame) {
+	public PauseState(GameState currentGame) {
 	
 		super.button1.setString(Constants.RESUME);
 		super.button1.setAction(new Action() {

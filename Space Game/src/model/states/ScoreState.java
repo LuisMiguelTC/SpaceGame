@@ -4,9 +4,10 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-import model.JSONParser;
-import model.ScoreData;
+
 import model.gameobjects.Constants;
+import model.utils.JSONParser;
+import model.utils.ScoreData;
 import ui.Action;
 import ui.Button;
 

@@ -1,8 +1,7 @@
-package model;
+package model.utils;
 
 public class ScoreData {
 	
-	private String date;
 	private int score;
 	private String name;
 	private int enemydestroyed;
@@ -15,14 +14,6 @@ public class ScoreData {
 	}
 	
 	public ScoreData() {	
-	}
-
-	public String getDate() {
-		return date;
-	}
-
-	public void setDate(String date) {
-		this.date = date;
 	}
 
 	public int getScore() {
@@ -47,6 +38,11 @@ public class ScoreData {
 
 	public void setEnemydestroyed(int enemydestroyed) {
 		this.enemydestroyed = enemydestroyed;
+	}
+
+	@Override
+	public String toString() {
+		return "ScoreData [score=" + score + ", name=" + name + ", enemydestroyed=" + enemydestroyed + "]";
 	}
 	
 }

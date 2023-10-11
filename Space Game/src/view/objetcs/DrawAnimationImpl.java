@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import model.utils.Animation;
 import view.utils.Assets;
-//import view.utils.Sound;
+
 
 public class DrawAnimationImpl implements DrawAnimation{
 
@@ -12,7 +12,6 @@ public class DrawAnimationImpl implements DrawAnimation{
 	private Animation animation;
 	private int length;
 	private BufferedImage anim;
-	//private Sound explosion = new Sound(Assets.explosion);
 	
 	public DrawAnimationImpl(Animation animation, Graphics2D g2) {
 		this.animation = animation;

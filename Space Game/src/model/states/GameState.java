@@ -3,13 +3,10 @@ package model.states;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
-
 import controller.engine.GameFactory;
 import input.GameKeyboard;
 import mathgame.Vector2D;
 import model.HitEvent;
-import model.JSONParser;
-import model.ScoreData;
 import model.Space;
 import model.SpaceEvent;
 import model.SpaceEventListener;
@@ -25,6 +22,8 @@ import model.gameobjects.PowerUpTypes;
 import model.gameobjects.Size;
 import model.utils.Animation;
 import model.utils.ColorMessage;
+import model.utils.JSONParser;
+import model.utils.ScoreData;
 import ui.Action;
 //import view.utils.Assets;
 //import view.utils.Sound;
@@ -43,6 +42,7 @@ public class GameState extends State implements SpaceEventListener{
 	private GameFactory f;
 	//private Sound backgroundMusic;
 	private LinkedList<SpaceEvent> eventQueue;
+	private boolean checked;
 	
 	public GameState(String namePlayer) {
 		
@@ -54,6 +54,7 @@ public class GameState extends State implements SpaceEventListener{
 		this.space.addGameMessages(f.createGameMessage(new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2),
 				false, "START GAME", ColorMessage.YELLOW));
 		this.space.setEventListener(this);
+		this.checked = false;
 		/*backgroundMusic = new Sound(Assets.backgroundMusic);
 		backgroundMusic.loop();
 		backgroundMusic.changeVolume(-20.0f);*/
@@ -65,15 +66,19 @@ public class GameState extends State implements SpaceEventListener{
 	
 	public void addScore(int value, Vector2D position) {
 		
-		ColorMessage c = ColorMessage.WHITE; 
-		String text = "+" + value + " score";
-		if(space.getPlayer().isDoubleScoreOn()){
-			c = ColorMessage.YELLOW;
-			value = value * 2;
-			text = "+" + value + " score";
+		if(checked) {
+			ColorMessage c = ColorMessage.WHITE; 
+			String text = "+" + value + " score";
+			if(space.getPlayer().isDoubleScoreOn()){
+				c = ColorMessage.YELLOW;
+				value = value * 2;
+				text = "+" + value + " score";
+			}
+			score += value;
+			space.addGameMessages(f.createActionGameMessage(position, text, c));
 		}
-		score += value;
-		space.addGameMessages(f.createActionGameMessage(position, text, c));
+		else 
+			throw new IllegalStateException();
 	}
 	
 	public void startWave() {
@@ -108,7 +113,7 @@ public class GameState extends State implements SpaceEventListener{
 		double y = rand == 0 ? Constants.HEIGHT : (Math.random()*Constants.HEIGHT);
 		
 		space.addGameObject(f.createEnemy(new Vector2D(x, y), new Vector2D(55,55)));
-		space.getEnemy().setpathEnemy(new BasicPathEnemy());	
+		space.getEnemy().setpathEnemy(new BasicPathEnemy());
 	}
 
 	public void spawnPowerUp() {
@@ -190,12 +195,12 @@ public class GameState extends State implements SpaceEventListener{
 	}
 	
 	public void update(float dt){
-		
+
 		space.updateSpace(dt);
 		CheckEvents();
 		
 		if(GameKeyboard.PAUSE) 
-			State.setState(new MenuPauseState(this));
+			State.setState(new PauseState(this));
 	
 		if(isGameOver())
 			gameOverTimer += dt;
@@ -206,7 +211,7 @@ public class GameState extends State implements SpaceEventListener{
 		if(gameOverTimer > Constants.GAME_OVER_TIME) {
 			try {
 				ArrayList<ScoreData> dataList = JSONParser.readFile();
-				dataList.add(new ScoreData(score, this.namePlayer, space.getCountEnemyDied()));
+				dataList.add(new ScoreData(score, namePlayer, space.getCountEnemiesDied()));
 				JSONParser.writeFile(dataList);	
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -237,7 +242,10 @@ public class GameState extends State implements SpaceEventListener{
 	}
 	
 	public int getNumberLives() {
-		return this.lives;
+		if(checked)
+			return this.lives;
+		else
+			throw new IllegalStateException();
 	}
 	
 	public Space getSpace() {
@@ -266,6 +274,7 @@ public class GameState extends State implements SpaceEventListener{
 	}
 	
 	public void CheckEvents() {
+		this.checked = true;
 		Space space = this.getSpace();
 		eventQueue.stream().forEach(ev->{
 			if(ev instanceof HitEvent) {

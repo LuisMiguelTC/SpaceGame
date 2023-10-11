@@ -13,10 +13,12 @@ public class Constants {
 	
 	public static final int FIRERATE = 800;
 	public static final double DELTAANGLE = 0.04;
-	public static final double ACC = 0.3;
+	public static final double ACC = 0.25;
+	public static final double DEC = 0.025;
 	public static final double PLAYER_MAX_VEL = 3.0;
 	public static final long FLICKER_TIME = 200;
 	public static final long SPAWNING_TIME = 3000;
+	public static final long DECELERATION_TIME = 5000;
 	public static final long GAME_OVER_TIME = 3000;
 	
 	// Laser properties
