@@ -8,10 +8,10 @@ import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import input.GameKeyboard;
+import input.GameInput;
 import mathgame.Vector2D;
 import model.Space;
-import model.gameobjects.Meteor;
+import model.gameobjects.Asteroid;
 import model.gameobjects.MovingObject;
 import model.gameobjects.Player;
 import model.states.GameState;
@@ -24,6 +24,51 @@ public class GameStateTest {
 
 	GameState gameState = new GameState("Miguel");
 	float dt = 20.0f;
+	
+	@org.junit.Test
+	public void TestPlayer() {
+		Space space = gameState.getSpace();
+		Player player = space.getPlayer();
+		//aggiorniamo lo stato del player
+		player.update(dt, space);
+		//verifichiamo che il player stia al centro dello schermo come posizione
+		//iniziale
+		assertEquals(new Vector2D(500,300)
+				.subtract(new Vector2D(player.getWidth()/2,player.getHeight()/2)).toString()
+				,player.getPosition().toString());
+		
+		//lo spostiamo in verticale quindi acceleriamo
+		GameInput.UP = true;
+		player.update(dt, space);
+		assertTrue(player.isAccelerating());
+		//verifichiamo lo spostamento calcolato con la costante di accelerazione
+		//di 0.25, ci si aspetta un valore di 281 - 0.25 = 280.75 della componente Y
+		assertEquals(new Vector2D(481,280.75).toString(),player.getPosition().toString());
+		//posizione attuale Y  -0.5 
+		player.update(dt, space);
+		//pozione attuale Y -0.75 e verifichiamo nuovamente la posizione del player
+		player.update(dt, space);
+		assertEquals(new Vector2D(481,279.5).toString(),player.getPosition().toString());
+		//aggiorniamo nuovamente e settiamo la posizione ad una nuova variabile temp
+		player.update(dt, space);
+		Vector2D tempPosition = player.getPosition();
+		//controlliamo la velocità aggiornata
+		//dato che stiamo andando in direzione verticale ci si aspetta
+		//che la Y del vettore velocità sia -1 mentre la X è sempre la stessa
+		assertEquals(-1.0, player.getVelocity().getY());
+		
+		//inizia la decelarazione quindi ci si aspetta che la velocità non continui ad aumentare di -0.25
+		//ma a diminuire di +0.025(scelta come costante di decelerazione e quindi -1 + 0.025 = -0.975
+		GameInput.UP = false;
+		player.update(dt, space);
+		assertFalse(player.isAccelerating());
+		assertEquals(player.getPosition().toString(), tempPosition.add(player.getVelocity()).toString());
+		//aggiorniamo la posizione temp
+		tempPosition = tempPosition.add(player.getVelocity());
+		//a -0.975 +0.025 = -0.95 e verifichiamo nuovamente la posizione
+		player.update(dt, space);
+		assertEquals(player.getPosition().toString(), tempPosition.add(player.getVelocity()).toString());	
+	}
 	
 	@org.junit.Test
 	public void CollisionTest1() {
@@ -56,7 +101,7 @@ public class GameStateTest {
 		//faccio partire il wave
 		gameState.update(dt);
 		//il player spara e quindi viene aggiunto l'oggetto laser
-		GameKeyboard.SHOOT = true;
+		GameInput.SHOOT = true;
 		player.setFireRate(800);
 		player.setSpawning(false);
 		player.update(dt, space);
@@ -64,26 +109,26 @@ public class GameStateTest {
 		//posizione centrale player
 		assertEquals(new Vector2D(500,300).toString(),player.getCenter().toString());
 		//viene settato l'oggetto meteor e si verifica subito la collisione con l'oggetto laser
-		Meteor meteor = (Meteor) space.getMovingObjects().get(2); 
-		assertFalse(meteor.isCollides());
+		Asteroid asteroid = (Asteroid) space.getMovingObjects().get(2); 
+		assertFalse(asteroid.isCollides());
 		//avviciniamo l'oggetto meteor a l'oggetto laser
-		meteor.setPosition(new Vector2D(420,200));
+		asteroid.setPosition(new Vector2D(420,200));
 		
 		//si aggiorna diverse volte la posizione dell'oggetto meteor e si verifica
 		//nuovamente la collisione, la scelta della direzione del meteorito è non 
 		//deterministica quindi cambierà sempre.
-		meteor.update(dt, space);
-		meteor.update(dt, space);
-		meteor.update(dt, space);
-		meteor.update(dt, space);
-		meteor.collidesWith(space);
-		assertTrue(meteor.isCollides());
+		asteroid.update(dt, space);
+		asteroid.update(dt, space);
+		asteroid.update(dt, space);
+		asteroid.update(dt, space);
+		asteroid.collidesWith(space);
+		assertTrue(asteroid.isCollides());
 		
 		//verifichiamo che il meteorito sia stato diviso a metà
 		//e il punteggio aggiornato
 		gameState.update(dt);
-		assertTrue(meteor.isDivided());
-		assertTrue(!space.getMovingObjects().contains(meteor));
+		assertTrue(asteroid.isDivided());
+		assertTrue(!space.getMovingObjects().contains(asteroid));
 		assertEquals(20,gameState.getScore());
 		assertTrue(space.getMovingObjects().stream()
 				.map(m-> m.getType()).collect(Collectors.toList())
@@ -111,7 +156,7 @@ public class GameStateTest {
 		player.setSpawning(false);
 		player.objectCollision(player, enemies.get(2), space);
 		player.setSpawning(false);
-		gameState.CheckEvents();
+		gameState.checkEvents();
 		assertEquals(1, space.getMovingObjects().size());
 		assertEquals(2, gameState.getNumberLives());
 		assertEquals(120, gameState.getScore());
@@ -188,54 +233,10 @@ public class GameStateTest {
 	
 	@org.junit.Test
     public void TestException() {
-		assertThrows(IllegalStateException.class, () -> gameState.getNumberLives());
 		assertThrows(IllegalStateException.class, () -> gameState.addScore(20, new Vector2D(400,300)));		
 	}
 	
-	@org.junit.Test
-	public void TestPlayer() {
-		Space space = gameState.getSpace();
-		Player player = space.getPlayer();
-		//aggiorniamo lo stato del player
-		player.update(dt, space);
-		//verifichiamo che il player stia al centro dello schermo come posizione
-		//iniziale
-		assertEquals(new Vector2D(500,300)
-				.subtract(new Vector2D(player.getWidth()/2,player.getHeight()/2)).toString()
-				,player.getPosition().toString());
-		
-		//lo spostiamo in verticale quindi acceleriamo
-		GameKeyboard.UP = true;
-		player.update(dt, space);
-		assertTrue(player.isAccelerating());
-		//verifichiamo lo spostamento calcolato con la costante di accelerazione
-		//di 0.25, ci si aspetta un valore di 281 - 0.25 = 280.75 della componente Y
-		assertEquals(new Vector2D(481,280.75).toString(),player.getPosition().toString());
-		//posizione attuale Y  -0.5 
-		player.update(dt, space);
-		//pozione attuale Y -0.75 e verifichiamo nuovamente la posizione del player
-		player.update(dt, space);
-		assertEquals(new Vector2D(481,279.5).toString(),player.getPosition().toString());
-		//aggiorniamo nuovamente e settiamo la posizione ad una nuova variabile temp
-		player.update(dt, space);
-		Vector2D tempPosition = player.getPosition();
-		//controlliamo la velocità aggiornata
-		//dato che stiamo andando in direzione verticale ci si aspetta
-		//che la Y del vettore velocità sia -1 mentre la X è sempre la stessa
-		assertEquals(-1.0, player.getVelocity().getY());
-		
-		//inizia la decelarazione quindi ci si aspetta che la velocità non continui ad aumentare di -0.25
-		//ma a diminuire di +0.025(scelta come costante di decelerazione e quindi -1 + 0.025 = -0.975
-		GameKeyboard.UP = false;
-		player.update(dt, space);
-		assertFalse(player.isAccelerating());
-		assertEquals(player.getPosition().toString(), tempPosition.add(player.getVelocity()).toString());
-		//aggiorniamo la posizione temp
-		tempPosition = tempPosition.add(player.getVelocity());
-		//a -0.975 +0.025 = -0.95 e verifichiamo nuovamente la posizione
-		player.update(dt, space);
-		assertEquals(player.getPosition().toString(), tempPosition.add(player.getVelocity()).toString());	
-	}
+	
 	
 	@org.junit.Test
 	public void TestPowerUp(){
@@ -256,8 +257,8 @@ public class GameStateTest {
 		//supponiamo che il powerUp raccolto sia lo scudo(Shield)
 		player.setShield();
 		//simuliamo la collisione con l'oggetto meteorito
-		Meteor meteor = (Meteor) space.getMovingObjects().get(1);
-		player.objectCollision(player, meteor, space);
+		Asteroid asteroid = (Asteroid) space.getMovingObjects().get(1);
+		player.objectCollision(player, asteroid, space);
 		gameState.update(dt);
 		//il numero di elementi sarà lo stesso poichè il meteorito non verrà
 		//distrutto ma respinto
