@@ -43,11 +43,9 @@ public class Message {
 		return text;
 	}
 
-
 	public Vector2D getPosition() {
 		return position;
 	}
-
 
 	public ColorMessage getColor() {
 		return color;

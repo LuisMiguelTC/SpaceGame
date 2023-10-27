@@ -34,24 +34,12 @@ public class DrawMovingObjectImpl implements DrawMovingObject{
 	public void updateDrawMovingObject() {
 		
 		switch(typeObject) {
-
-		case "PLAYER":
-			drawPlayer(mo,Assets.player);
-			break;
-		case "ENEMY":
-			drawEnemy(mo, Assets.enemy);
-			break;
-		case "LASER":
-			drawLaser(mo);
-			break;
-		case "POWERUP":
-			drawPowerUp(mo);
-			break;
-		case "METEOR":
-			drawMeteor(mo);
-			break;
-		default:
-			return;
+		case "PLAYER" -> drawPlayer(mo,Assets.player);
+		case "ENEMY" -> drawEnemy(mo, Assets.enemy);
+		case "LASER" -> drawLaser(mo);
+		case "POWERUP" -> drawPowerUp(mo);
+		case "METEOR" -> drawMeteor(mo);
+		default -> throw new IllegalArgumentException();
 		}
 	}
 	
@@ -118,26 +106,13 @@ public class DrawMovingObjectImpl implements DrawMovingObject{
 		PowerUpTypes powerUpType = p.getPowerUpType();
 		
 		switch(powerUpType) {
-		case LIFE:
-			texture = Assets.life;
-			break;
-		case SHIELD:
-			texture = Assets.shield;
-			break;
-		case SCORE_X2:
-			texture = Assets.doubleScore;
-			break;
-		case FASTER_FIRE:
-			texture = Assets.fastFire;
-			break;
-		case SCORE_STACK:
-			texture = Assets.star;
-			break;
-		case DOUBLE_GUN:
-			texture = Assets.doubleGun;
-			break;
-		default:
-			break;
+			case LIFE -> texture = Assets.life;
+			case SHIELD -> texture = Assets.shield;
+			case SCORE_X2 -> texture = Assets.doubleScore;
+			case FASTER_FIRE -> texture = Assets.fastFire;
+			case SCORE_STACK -> texture = Assets.star;
+			case DOUBLE_GUN -> texture = Assets.doubleGun;
+			default -> throw new IllegalArgumentException();
 		}
 
 		Vector2D position = p.getPosition();
@@ -160,14 +135,9 @@ public class DrawMovingObjectImpl implements DrawMovingObject{
 		BufferedImage texture = null;
 		
 		switch(colorLaser) {
-		case "BLUE":
-			texture = Assets.blueLaser;
-			break;
-		case "RED":
-			texture = Assets.redLaser;
-			break;
-		default:
-			break;
+			case "BLUE" -> texture = Assets.blueLaser;
+			case "RED" -> texture = Assets.redLaser;
+			default -> throw new IllegalArgumentException();
 		}
 		
 		Vector2D position = obj.getPosition();
@@ -185,17 +155,10 @@ public class DrawMovingObjectImpl implements DrawMovingObject{
 		if(size != Size.BIG) {
 			
 			switch(size){
-			case MED:
-				texture = Assets.meds[m.getRandomMeteor()];
-				break;
-			case SMALL:
-				texture = Assets.smalls[m.getRandomMeteor()];
-				break;
-			case TINY:
-				texture = Assets.tinies[m.getRandomMeteor()];
-				break;
-			default:
-				return;
+				case MED -> texture = Assets.meds[m.getRandomMeteor()];
+				case SMALL -> texture = Assets.smalls[m.getRandomMeteor()];
+				case TINY -> texture = Assets.tinies[m.getRandomMeteor()];
+				default -> throw new IllegalArgumentException();
 			}
 		}
 		

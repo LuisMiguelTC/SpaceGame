@@ -13,9 +13,9 @@ public class GameFactory {
 	private Vector2D PLAYER_START_POSITION = new Vector2D(Constants.WIDTH/2 - 38/2,
 			Constants.HEIGHT/2 - 38/2);
 	
-	static private GameFactory instance;
+	private static GameFactory instance;
 		
-	static public GameFactory getInstance(){
+	public static GameFactory getInstance(){
 		if (instance == null){
 			instance = new GameFactory();
 		}
@@ -23,7 +23,7 @@ public class GameFactory {
 	}
 		
 	public MovingObject createPlayer(){
-		return new Player(PLAYER_START_POSITION, new Vector2D(38.0,38.0),new Vector2D(), Constants.PLAYER_MAX_VEL);			
+		return new Player(PLAYER_START_POSITION, new Vector2D(38.0,38.0),new Vector2D(0,0), Constants.PLAYER_MAX_VEL);			
 	}
 	
 	public Message createActionGameMessage(Vector2D pos, String text, ColorMessage c) {
@@ -35,6 +35,6 @@ public class GameFactory {
 	}
 	
 	public Enemy createEnemy(Vector2D pos, Vector2D dimension) {
-		return new Enemy(pos, dimension, new Vector2D(), Constants.ENEMY_MAXVEL);
+		return new Enemy(pos, dimension, new Vector2D(0,0), Constants.ENEMY_MAXVEL);
 	}
 }

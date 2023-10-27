@@ -58,7 +58,6 @@ public abstract class MovingObject extends GameObject implements MovingObjectFea
 		if(!(a instanceof PowerUp || b instanceof PowerUp)){
 			a.destroy(space);
 			b.destroy(space);
-			
 			return;
 		}
 		

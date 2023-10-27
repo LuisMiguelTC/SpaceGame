@@ -15,6 +15,7 @@ import model.gameobjects.Asteroid;
 import model.gameobjects.MovingObject;
 import model.gameobjects.Player;
 import model.states.GameState;
+import model.states.InitState;
 import model.states.MenuState;
 import model.states.ScoreState;
 import model.states.State;
@@ -24,11 +25,11 @@ public class GameStateTest {
 
 	GameState gameState = new GameState("Miguel");
 	float dt = 20.0f;
+	Space space = gameState.getSpace();
+	Player player = space.getPlayer();
 	
 	@org.junit.Test
 	public void TestPlayer() {
-		Space space = gameState.getSpace();
-		Player player = space.getPlayer();
 		//aggiorniamo lo stato del player
 		player.update(dt, space);
 		//verifichiamo che il player stia al centro dello schermo come posizione
@@ -67,14 +68,19 @@ public class GameStateTest {
 		tempPosition = tempPosition.add(player.getVelocity());
 		//a -0.975 +0.025 = -0.95 e verifichiamo nuovamente la posizione
 		player.update(dt, space);
-		assertEquals(player.getPosition().toString(), tempPosition.add(player.getVelocity()).toString());	
+		assertEquals(player.getPosition().toString(), tempPosition.add(player.getVelocity()).toString());
+		
+		//verifichiamo che una volta passato il tempo di decelerazione la navicella rimane in quella posizione
+		//per tutto il tempo, fino a quando non gli verrà dato un nuovo input
+		player.update(5000, space);
+		tempPosition = player.getPosition();
+		player.update(1000, space);
+		assertEquals(player.getPosition().toString(), tempPosition.toString());
+		
 	}
 	
 	@org.junit.Test
 	public void CollisionTest1() {
-
-		Space space = gameState.getSpace();
-		Player player = space.getPlayer();
 		//creo un nemico in posizione casuale
 		gameState.spawnEnemy();
 		assertEquals(2,space.getMovingObjects().size());
@@ -96,8 +102,6 @@ public class GameStateTest {
 	
 	@org.junit.Test
 	public void CollisionTest2() {
-		Space space = gameState.getSpace();
-		Player player = space.getPlayer();
 		//faccio partire il wave
 		gameState.update(dt);
 		//il player spara e quindi viene aggiunto l'oggetto laser
@@ -138,12 +142,11 @@ public class GameStateTest {
 	
 	@org.junit.Test
 	public void CollisionTest3() {
-		Space space = gameState.getSpace();
-		Player player = space.getPlayer();
 		//vengnono aggiunti 3 nemici
 		gameState.spawnEnemy();
 		gameState.spawnEnemy();
 		gameState.spawnEnemy();
+		
 		List<MovingObject> enemies = space.getMovingObjects().stream()
 				.filter(m->m.getType().equals("ENEMY")).collect(Collectors.toList());
 		
@@ -156,8 +159,7 @@ public class GameStateTest {
 		player.setSpawning(false);
 		player.objectCollision(player, enemies.get(2), space);
 		player.setSpawning(false);
-		gameState.checkEvents();
-		assertEquals(1, space.getMovingObjects().size());
+		gameState.update(dt);
 		assertEquals(2, gameState.getNumberLives());
 		assertEquals(120, gameState.getScore());
 		//verifichiamo che il player muore definitivamente quando le sue 
@@ -173,10 +175,10 @@ public class GameStateTest {
 	}
 	
 	@org.junit.Test
-	public void StateTest() {
-		
+	public void TestState() {
 		MenuState menuState = new MenuState();
 		ScoreState scoreState = null;
+		InitState initState = null;
 		
 		State.setState(menuState);
 		assertTrue(menuState.getButtons().stream()
@@ -200,12 +202,18 @@ public class GameStateTest {
 		scoreState = (ScoreState) State.getCurrentState().get();
 		scoreState.getButton().getAction().doAction();
 		assertTrue("MENU".equals(State.getCurrentState().get().typeState()));
+		menuState.getButtons().get(0).getAction().doAction();
+		assertTrue("INIT".equals(State.getCurrentState().get().typeState()));
+		initState = (InitState) State.getCurrentState().get();
+		initState.getButton().getAction().doAction();
+		assertTrue("GAMESTATE".equals(State.getCurrentState().get().typeState()));
+		gameState = new GameState(initState.getNamePlayer().get());
+		assertEquals("UnknownPlayer", gameState.getNamePlayer());
+		
 	}
 	
 	@org.junit.Test
 	public void TestFail(){
-		Space space = gameState.getSpace();
-		Player player = space.getPlayer();
 		gameState.update(dt);
 		try {
 			space.getEnemy().isDead();	
@@ -227,8 +235,7 @@ public class GameStateTest {
 		//distruzione dell'oggetto meteorito e aggiunta dello score
 		gameState.getSpace().getMovingObjects().get(1).destroy(space);
 		gameState.update(dt);
-		assertEquals(20,gameState.getScore());
-		
+		assertEquals(20,gameState.getScore());	
 	}
 	
 	@org.junit.Test
@@ -236,12 +243,8 @@ public class GameStateTest {
 		assertThrows(IllegalStateException.class, () -> gameState.addScore(20, new Vector2D(400,300)));		
 	}
 	
-	
-	
 	@org.junit.Test
 	public void TestPowerUp(){
-		Space space = gameState.getSpace();
-		Player player = space.getPlayer();
 		//immaginiamo che il powerUp raccolto sia lo Scorex2
 		player.setDoubleScore();
 		gameState.spawnEnemy();
@@ -281,10 +284,7 @@ public class GameStateTest {
 	}*/
 	
 	@org.junit.Test
-	public void JsonTest(){
-		
-		Space space = gameState.getSpace();
-		Player player = gameState.getSpace().getPlayer();
+	public void TestData(){
 		assertEquals("Miguel", gameState.getNamePlayer());
 		gameState.update(dt);
 		//setto lo score
@@ -306,7 +306,6 @@ public class GameStateTest {
 			assertTrue(JSONParser.readFile().toString().contains(scoreState.getHighScores().element().toString()));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}
-		
+		}	
 	}
 }

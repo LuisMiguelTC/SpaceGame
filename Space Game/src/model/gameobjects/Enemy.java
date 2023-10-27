@@ -44,7 +44,7 @@ public class Enemy extends MovingObject implements EnemyFeatures{
 		if(following)
 			pathFollowing = getpathFollowing();
 		else
-			pathFollowing = new Vector2D();
+			pathFollowing = new Vector2D(0,0);
 			
 		pathFollowing = pathFollowing.scale(1/Constants.ENEMY_MASS);
 		velocity = velocity.add(pathFollowing);
@@ -76,7 +76,6 @@ public class Enemy extends MovingObject implements EnemyFeatures{
 			fireRate = 0;
 			isShooting = true;
 		}
-		
 		angle += 0.05;
 	}
 	

@@ -2,30 +2,26 @@ package view.state;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Optional;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import model.gameobjects.Constants;
-import model.states.GameState;
-import model.states.State;
+import model.states.InitState;
 import view.utils.Assets;
 
-public class InsertNamePlayer extends JFrame{
+public class SingletonInsertNamePlayer extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-	private Optional<String> namePlayerDefault = Optional.of("UnkownPlayer");
+	private static SingletonInsertNamePlayer instance;
 	
-	public InsertNamePlayer() {
+	private SingletonInsertNamePlayer() {
 		
 		setPreferredSize(new Dimension(Constants.WIDTH/2, Constants.HEIGHT/4));
 		
 		setResizable(false);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.BLACK);
@@ -45,25 +41,25 @@ public class InsertNamePlayer extends JFrame{
 		panel.add(button);
 		getContentPane().add(panel);
 		
-		button.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		button.addActionListener(e->{
 				String namePlayer = textEmail.getText();
-				if(namePlayer.isEmpty())
-					namePlayer = namePlayerDefault.get();
 				setVisible(false);
-				State.setState(new GameState(namePlayer));
-			}
-			
-		});
+				InitState.setNamePlayer(namePlayer);
+			});
 		
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
-
-	public String getNamePlayer() {
-		return namePlayerDefault.get();
+	
+	static SingletonInsertNamePlayer getInstance() {
+		if(instance == null) {
+			instance = new SingletonInsertNamePlayer();
+		}
+		return instance;
+	}
+	
+	static void resetSingleton() {
+		instance = null;
 	}
 }

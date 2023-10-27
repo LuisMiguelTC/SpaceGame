@@ -144,7 +144,6 @@ public class GameView implements View{
 		@Override
 		public void mouseMoved(MouseEvent e) {
 			mouseInput.notifyMouseMoved(e.getX(), e.getY());
-			
 		}
 
 		@Override

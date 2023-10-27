@@ -26,8 +26,8 @@ public class Player extends MovingObject implements PlayerFeatures{
 		
 		initialPosition = position;
 		heading = new Vector2D(0,1);
-		acceleration = new Vector2D();
-		temPosition = new Vector2D();
+		acceleration = new Vector2D(0,0);
+		temPosition = new Vector2D(0,0);
 		fireRate = 0;
 		spawnTime = 0;
 		flickerTime = 0;
@@ -46,7 +46,7 @@ public class Player extends MovingObject implements PlayerFeatures{
 		
 		fireRate += dt;
 		
-		if(fireRate > dt*2) 
+		if(fireRate > dt*4) 
 			shooting = false;
 		
 		if(shieldOn)
@@ -103,8 +103,7 @@ public class Player extends MovingObject implements PlayerFeatures{
 			
 		}
 		
-		if(GameInput.SHOOT &&  fireRate > fireSpeed && !spawning) {
-			
+		if(GameInput.SHOOT &&  fireRate > fireSpeed && !spawning) {	
 			if(doubleGunOn) {
 				Vector2D leftGun = getCenter();
 				Vector2D rightGun = getCenter();
@@ -118,12 +117,10 @@ public class Player extends MovingObject implements PlayerFeatures{
 				temp = temp.setDirection(angle - 1.9f);
 				leftGun = leftGun.add(temp);
 				
-				Laser l = new Laser(leftGun, new Vector2D(9.0,54.0), heading, Constants.LASER_VEL, angle, "BLUE");
-				Laser r = new Laser(rightGun, new Vector2D(9.0,54.0), heading, Constants.LASER_VEL, angle,"BLUE");
-				
-				space.getMovingObjects().add(0, l);
-				space.getMovingObjects().add(0, r);
+				space.getMovingObjects().add(0, new Laser(leftGun, new Vector2D(9.0,54.0), heading, Constants.LASER_VEL, angle, "BLUE"));
+				space.getMovingObjects().add(0, new Laser(rightGun, new Vector2D(9.0,54.0), heading, Constants.LASER_VEL, angle,"BLUE"));
 			}
+			
 			else{		
 				space.getMovingObjects().add(0,new Laser(
 					getCenter().add(heading.scale(width)),
@@ -137,16 +134,12 @@ public class Player extends MovingObject implements PlayerFeatures{
 			fireRate = 0;	
 			shooting = true;
 		}
-		
-		
-		
+
 		if(GameInput.RIGHT)
 			angle += Constants.DELTAANGLE;
 		if(GameInput.LEFT)
 			angle -= Constants.DELTAANGLE;
-	
-		
-		
+
 		if(GameInput.UP){
 			accelerating = true;
 			acceleration = heading.scale(Constants.ACC);	
@@ -166,7 +159,7 @@ public class Player extends MovingObject implements PlayerFeatures{
 		}
 		
 		if (decelerationTime > Constants.DECELERATION_TIME) {
-			velocity = new Vector2D();
+			velocity = new Vector2D(0,0);
 			decelerationTime = 0;
 		}
 		
@@ -236,7 +229,7 @@ public class Player extends MovingObject implements PlayerFeatures{
 	@Override
 	public void resetValues() {
 		angle = 0;
-		velocity = new Vector2D();
+		velocity = new Vector2D(0,0);
 		setPosition(initialPosition);
 	}
 	
@@ -290,5 +283,4 @@ public class Player extends MovingObject implements PlayerFeatures{
 	public String getType() {
 		return "PLAYER";
 	}
-	
 }

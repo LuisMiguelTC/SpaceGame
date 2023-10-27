@@ -43,6 +43,5 @@ public class ScoreData {
 	@Override
 	public String toString() {
 		return "ScoreData [score=" + score + ", name=" + name + ", enemydestroyed=" + enemydestroyed + "]";
-	}
-	
+	}	
 }

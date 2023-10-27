@@ -29,16 +29,14 @@ public class JSONParser {
 		
 		JSONArray jsonList = new JSONArray(new JSONTokener(new FileInputStream(file)));
 		
-		for(int i = 0; i < jsonList.length(); i++) {
-			
-			JSONObject obj = (JSONObject)jsonList.get(i);
+		jsonList.forEach(obj -> {
 			ScoreData data = new ScoreData();
-			
-			data.setName(obj.getString("name"));
-			data.setScore(obj.getInt("score"));		
-			data.setEnemydestroyed(obj.getInt("count"));
+			data.setName(((JSONObject) obj).getString("name"));
+			data.setScore(((JSONObject) obj).getInt("score"));		
+			data.setEnemydestroyed(((JSONObject) obj).getInt("count"));
 			dataList.add(data);
-		}
+		});
+		
 		return dataList;
 	}
 	
@@ -51,16 +49,14 @@ public class JSONParser {
 		
 		JSONArray jsonList = new JSONArray();
 		
-		for(ScoreData data: dataList) {
-			
+		 dataList.forEach(data -> {
 			JSONObject obj = new JSONObject();
-	
 			obj.put("name", data.getName());
 			obj.put("score", data.getScore());
 			obj.put("count", data.getEnemydestroyed());
 			jsonList.put(obj);	
-		}
-		
+		});
+		 
 		BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile.toURI()));
 		jsonList.write(writer);
 		writer.close();

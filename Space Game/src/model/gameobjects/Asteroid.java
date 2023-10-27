@@ -67,17 +67,10 @@ public class Asteroid extends MovingObject implements AsteroidFeatures{
 		Size newSize = null;
 		
 		switch(size){
-		case BIG:
-			newSize =  Size.MED;
-			break;
-		case MED:
-			newSize = Size.SMALL;
-			break;
-		case SMALL:
-			newSize = Size.TINY;
-			break;
-		default:
-			return;
+			case BIG -> newSize =  Size.MED;
+			case MED -> newSize = Size.SMALL;
+			case SMALL -> newSize = Size.TINY;
+			default -> newSize = null;
 		}
 			
 		for(int i = 0; i < size.quantity; i++) {

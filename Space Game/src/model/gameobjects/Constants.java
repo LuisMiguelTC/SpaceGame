@@ -3,13 +3,11 @@ package model.gameobjects;
 
 public class Constants {
 	
-	// frame dimensions
-	
+	// Frame dimensions
 	public static final int WIDTH = 1000;
 	public static final int HEIGHT = 600;
 	
-	// player properties
-	
+	// Player properties
 	public static final int FIRERATE = 800;
 	public static final double DELTAANGLE = 0.04;
 	public static final double ACC = 0.25;
@@ -21,29 +19,25 @@ public class Constants {
 	public static final long GAME_OVER_TIME = 3000;
 	
 	// Laser properties
-	
 	public static final double LASER_VEL = 10.0;
-	public static final double LASER_VEL_ENEMY = 8.0;
+	public static final double LASER_VEL_ENEMY = 7.0;
 	
 	// Asteroid properties
-	
 	public static final double METEOR_INIT_VEL = 1.0;
 	public static final int METEOR_SCORE = 20;
 	public static final double METEOR_MAX_VEL = 3.0;
 	public static final int SHIELD_DISTANCE = 150;
 	
 	// Enemy properties
-	
 	public static final int NODE_RADIUS = 160;
 	public static final double ENEMY_MASS = 60;
 	public static final int ENEMY_MAXVEL = 1;
-	public static long ENEMY_FIRERATE = 1500;
+	public static long ENEMY_FIRERATE = 2000;
 	public static double ENEMY_ANGLE_RATE = Math.PI / 2;
 	public static final int ENEMY_SCORE = 40;
 	public static final long ENEMY_SPAWN_RATE = 15000;
 	
 	// Options
-	
 	public static final String MENU = "MENU";	
 	public static final String PLAY = "PLAY";
 	public static final String EXIT = "EXIT";

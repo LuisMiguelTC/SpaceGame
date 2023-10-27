@@ -11,7 +11,7 @@ public class PowerUp extends MovingObject {
 	private PowerUpTypes powerUpType;
 	
 	public PowerUp(Vector2D position, Vector2D dimension, Action action, PowerUpTypes powerUpType) {
-		super(position, dimension, new Vector2D(), 0);
+		super(position, dimension, new Vector2D(0,0), 0);
 		this.action = action;
 		duration = 0;
 		this.powerUpType = powerUpType;

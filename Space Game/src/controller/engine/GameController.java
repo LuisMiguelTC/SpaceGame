@@ -34,7 +34,7 @@ public class GameController implements Controller{
 		long time = 0;
 
 		while(!State.getCurrentState().isEmpty()){
-				
+			
 			now = System.nanoTime();
 			delta += (now - lastTime)/TARGETTIME;
 			time += (now - lastTime);

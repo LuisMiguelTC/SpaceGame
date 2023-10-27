@@ -1,8 +1,8 @@
 package model;
 
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import model.gameobjects.Enemy;
-import model.gameobjects.Asteroid;
 import model.gameobjects.MovingObject;
 import model.gameobjects.Player;
 import model.utils.Animation;
@@ -10,12 +10,11 @@ import model.utils.Message;
 
 public class Space {
 
-	private Player player;
-	private Enemy enemy;
+	private Optional<Player> player = Optional.empty();
+	private Optional<Enemy> enemy = Optional.empty();
 	private CopyOnWriteArrayList<MovingObject> movingObjects = new CopyOnWriteArrayList<MovingObject>();
 	private CopyOnWriteArrayList<Animation> explosions = new CopyOnWriteArrayList<Animation>();
 	private CopyOnWriteArrayList<Message> messages = new CopyOnWriteArrayList<Message>();
-	private int count;
 	private SpaceEventListener listener;
 	
 	
@@ -43,9 +42,7 @@ public class Space {
 		
 		movingObjects.forEach(mo->{
 			mo.update(dt, this);
-			mo.collidesWith(this);
-			if(mo.isDead() && (mo instanceof Enemy || mo instanceof Asteroid))
-				this.count++;});
+			mo.collidesWith(this);});
 			
 		explosions.forEach(anim ->{
 			anim.updateAnimation(dt);
@@ -71,22 +68,18 @@ public class Space {
 
 	public Player getPlayer() {
 		movingObjects.forEach(p->{if(p instanceof Player)
-			player = (Player) p;});
-		return player;
+			player = Optional.of((Player) p);});
+		return player.get();
 	}
 
 	public Enemy getEnemy() throws IllegalStateException {
 		movingObjects.forEach(e->{if(e instanceof Enemy)
-			enemy = (Enemy) e;});
-		if(enemy == null)
+			enemy = Optional.of((Enemy) e);});
+		if(enemy.isEmpty())
 			throw new IllegalStateException();
-		return enemy;	
+		return enemy.get();	
 	}
 
-	public int getCountEnemiesDied() {
-		return count;
-	}
-	
 	public void notifyEventListener(SpaceEvent ev) {
 		listener.notifyEvent(ev);
 	}

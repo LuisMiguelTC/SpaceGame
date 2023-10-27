@@ -58,32 +58,15 @@ public class DrawMessageImpl implements DrawMessage{
 			font = Assets.fontBig;
 		
 		switch(colorType) {
-		case WHITE:
-			color = Color.WHITE;
-			break;
-		case YELLOW:
-			color = Color.YELLOW;
-			break;
-		case BLUE:
-			color = Color.BLUE;
-			break;
-		case DARK_GRAY:
-			color = Color.DARK_GRAY;
-			break;
-		case GREEN:
-			color = Color.GREEN;
-			break;
-		case MAGENTA:
-			color = Color.MAGENTA;
-			break;
-		case ORANGE:
-			color = Color.ORANGE;
-			break;
-		case RED:
-			color = Color.RED;
-			break;
-		default:
-			break;
+			case WHITE -> color = Color.WHITE;
+			case YELLOW ->color = Color.YELLOW;
+			case BLUE -> color = Color.BLUE;
+			case DARK_GRAY -> color = Color.DARK_GRAY;
+			case GREEN -> color = Color.GREEN;
+			case MAGENTA -> color = Color.MAGENTA;
+			case ORANGE -> color = Color.ORANGE;
+			case RED -> color = Color.RED;
+			default -> throw new IllegalArgumentException();
 		}
 	}
 }

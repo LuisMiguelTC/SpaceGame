@@ -26,7 +26,7 @@ import model.utils.JSONParser;
 import model.utils.ScoreData;
 import ui.Action;
 
-public class GameState extends State implements SpaceEventListener{
+public class GameState extends State implements Game,SpaceEventListener{
 
 	private Space space;
 	private int score = 0;
@@ -41,6 +41,7 @@ public class GameState extends State implements SpaceEventListener{
 	private boolean isNewGame;
 	private LinkedList<SpaceEvent> eventQueue;
 	private boolean checked;
+	private int count;
 	
 	public GameState(String namePlayer) {
 		
@@ -59,23 +60,12 @@ public class GameState extends State implements SpaceEventListener{
 		powerUpSpawner = 0;	
 	}
 	
-	public void addScore(int value, Vector2D position) {
-		
-		if(checked) {
-			ColorMessage c = ColorMessage.WHITE; 
-			String text = "+" + value + " score";
-			if(space.getPlayer().isDoubleScoreOn()){
-				c = ColorMessage.YELLOW;
-				value = value * 2;
-				text = "+" + value + " score";
-			}
-			score += value;
-			space.addGameMessages(f.createActionGameMessage(position, text, c));
-		}
-		else 
-			throw new IllegalStateException();
+	@Override
+	public Space getSpace() {
+		return this.space;
 	}
 	
+	@Override
 	public void startWave() {
 		isNewGame = false;
 		space.addGameMessages(f.createGameMessage(new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2 + 50), false, 
@@ -102,6 +92,7 @@ public class GameState extends State implements SpaceEventListener{
 		waves++;
 	}
 
+	@Override
 	public void spawnEnemy() {
 		
 		int rand = (int) (Math.random()*2);
@@ -112,6 +103,7 @@ public class GameState extends State implements SpaceEventListener{
 		space.getEnemy().setpathEnemy(new BasicPathEnemy());
 	}
 
+	@Override
 	public void spawnPowerUp() {
 		
 		final int x = (int) ((Constants.WIDTH - 20)* Math.random());
@@ -124,63 +116,33 @@ public class GameState extends State implements SpaceEventListener{
 		Vector2D position = new Vector2D(x , y);
 		
 		switch(p) {
-		case LIFE:
-			action = new Action() {
-				@Override
-				public void doAction() {
+			case LIFE -> action = () -> {
 					lives ++;
 					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.GREEN));
-				}
 			};
-			break;
-		case SHIELD:
-			action = new Action() {
-				@Override
-				public void doAction() {
+			
+			case SHIELD -> action = () -> {
 					space.getPlayer().setShield();
 					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.DARK_GRAY));
-				}
-			};
-			break;
-		case SCORE_X2:
-			action = new Action() {
-				@Override
-				public void doAction() {
+				};
+			case SCORE_X2 -> action = ()-> {
 					space.getPlayer().setDoubleScore();
 					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.YELLOW));
-				}
-			};
-			break;
-		case FASTER_FIRE:
-			action = new Action() {
-				@Override
-				public void doAction() {
+				};
+			case FASTER_FIRE  -> action = ()-> {
 					space.getPlayer().setFastFire();
 					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.BLUE));
-				}
-			};
-			break;
-		case SCORE_STACK:
-			action = new Action() {
-				@Override
-				public void doAction() {
+				};
+			case SCORE_STACK  -> action = ()-> {
 					score += 1000;
 					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.MAGENTA));
-				}
-			};
-			break;
-		case DOUBLE_GUN:
-			action = new Action() {
-				@Override
-				public void doAction() {
+				};
+			case DOUBLE_GUN  -> action = ()-> {
 					space.getPlayer().setDoubleGun();
 					space.addGameMessages(f.createActionGameMessage(position, text, ColorMessage.ORANGE));
-				}
-			};
-			break;
-		default:
-			break;
-		}
+				};
+			default -> throw new IllegalArgumentException();
+		}	
 		
 		this.space.addMovingObject(new PowerUp(
 				position,
@@ -190,6 +152,50 @@ public class GameState extends State implements SpaceEventListener{
 				));
 	}
 	
+	@Override
+	public void addScore(int value, Vector2D position) {
+		
+		if(checked) {
+			ColorMessage c = ColorMessage.WHITE; 
+			String text = "+" + value + " score";
+			if(space.getPlayer().isDoubleScoreOn()){
+				c = ColorMessage.YELLOW;
+				value = value * 2;
+				text = "+" + value + " score";
+			}
+			score += value;
+			space.addGameMessages(f.createActionGameMessage(position, text, c));
+		}
+		else 
+			throw new IllegalStateException();
+	}
+
+	@Override
+	public int getScore(){
+		return this.score;
+	}
+	
+	@Override
+	public int getNumberLives() {
+		return this.lives;
+	}
+	
+	@Override
+	public String getNamePlayer() {
+		return this.namePlayer;
+	}
+	
+	@Override
+	public boolean isGameOver() {
+		return lives == 0; 
+	}
+	
+	@Override
+	public boolean isNewGame() {
+		return this.isNewGame;
+	}
+	
+	@Override
 	public void update(float dt){
 
 		space.updateSpace(dt);
@@ -208,7 +214,7 @@ public class GameState extends State implements SpaceEventListener{
 		if(gameOverTimer > Constants.GAME_OVER_TIME) {
 			try {
 				ArrayList<ScoreData> dataList = JSONParser.readFile();
-				dataList.add(new ScoreData(score, namePlayer, space.getCountEnemiesDied()));
+				dataList.add(new ScoreData(score, namePlayer, count));
 				JSONParser.writeFile(dataList);	
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -232,41 +238,8 @@ public class GameState extends State implements SpaceEventListener{
 		
 		startWave();
 	}
-
-	public int getScore(){
-		return this.score;
-	}
 	
-	public int getNumberLives() {
-		return this.lives;
-	}
-	
-	public Space getSpace() {
-		return this.space;
-	}
-	
-	public String getNamePlayer() {
-		return this.namePlayer;
-	}
-	
-	private boolean subtractLife() {
-		lives --;
-		if(lives > 0) {
-			space.addGameMessages(f.createActionGameMessage(
-					new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2), "-1 LIFE", ColorMessage.RED));	
-		}
-		return lives > 0;
-	}
-	
-	private void gameOverMessage() {
-		space.addGameMessages(f.createGameMessage(new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2), true, "GAME OVER", ColorMessage.WHITE));	
-	}
-	
-	public boolean isGameOver() {
-		return lives == 0; 
-	}
-	
-	public void checkEvents() {
+	private void checkEvents() {
 		this.checked = true;
 		Space space = this.getSpace();
 		eventQueue.stream().forEach(ev->{
@@ -283,11 +256,13 @@ public class GameState extends State implements SpaceEventListener{
 					p.resetValues();
 				}
 				else {
-					
 					space.removeMovingObject(mo);
 					if(!(mo instanceof Laser) && !(mo instanceof PowerUp)) {
 						this.playExplosion(mo.getPosition());
 						
+						if(mo instanceof Enemy || mo instanceof Asteroid)
+							this.count++;
+		
 						if(mo instanceof Enemy)
 							this.addScore(Constants.ENEMY_SCORE, mo.getPosition());
 						else if (mo instanceof Asteroid) {
@@ -300,6 +275,20 @@ public class GameState extends State implements SpaceEventListener{
 			}	
 		});
 		eventQueue.clear();
+	}
+	
+	private boolean subtractLife() {
+		lives --;
+		if(lives > 0) {
+			space.addGameMessages(f.createActionGameMessage(
+					new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2), "-1 LIFE", ColorMessage.RED));	
+		}
+		return lives > 0;
+	}
+	
+	private void gameOverMessage() {
+		space.addGameMessages(f.createGameMessage(
+				new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2), true, "GAME OVER", ColorMessage.WHITE));	
 	}
 
 	private void playExplosion(Vector2D position) {
@@ -316,9 +305,5 @@ public class GameState extends State implements SpaceEventListener{
 	@Override
 	public String typeState() {
 		return "GAMESTATE";
-	}
-	
-	public boolean isNewGame() {
-		return this.isNewGame;
 	}
 }

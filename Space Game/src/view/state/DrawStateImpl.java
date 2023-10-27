@@ -4,17 +4,15 @@ import java.awt.Color;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.util.Arrays;
-import java.util.PriorityQueue;
 import mathgame.Vector2D;
 import model.gameobjects.Constants;
 import model.states.GameState;
+import model.states.InitState;
 import model.states.MenuState;
 import model.states.PauseState;
 import model.states.ScoreState;
 import model.states.State;
 import model.utils.ScoreData;
-import ui.Button;
 import view.objetcs.DrawAnimation;
 import view.objetcs.DrawAnimationImpl;
 import view.objetcs.DrawButton;
@@ -46,30 +44,26 @@ public class DrawStateImpl implements DrawState{
 		
 		switch(type) {
 		
-		case "MENU":
-			drawMenuState();
-			break;
-		case "GAMESTATE":
-			drawGameState();
-			break;
-		case "INIT":
-			drawInitState();
-			break;
-		case "SCORE":
-			drawScoreState();
-			break;
-		case "PAUSE":
-			drawPauseState();
-			break;
-		default:
-			return;
+		case "MENU" -> drawMenuState();
+		case "GAMESTATE"-> drawGameState();
+		case "INIT"-> drawInitState();
+		case "SCORE" -> drawScoreState();
+		case "PAUSE" -> drawPauseState();
+		default-> throw new IllegalStateException();
 		}
 	}
 	
 
 	private void drawInitState() {
+		
+		InitState i = (InitState) currentState;
 		g2.drawImage(Assets.inittext, Constants.WIDTH/2 - Assets.inittext.getWidth()/2, 
-				Constants.HEIGHT/2 - Assets.inittext.getHeight()/2 - 150, null);			
+				Constants.HEIGHT/2 - Assets.inittext.getHeight()/2 - 150, null);
+		
+		DrawButton drawButton = new DrawButtonImpl(i.getButton(),g2);
+		drawButton.updateDrawButton();
+		
+		SingletonInsertNamePlayer.getInstance();
 	}
 	
 
@@ -79,10 +73,11 @@ public class DrawStateImpl implements DrawState{
 		g2.drawImage(Assets.menutext, Constants.WIDTH/2 - Assets.menutext.getWidth()/2,
 				Constants.HEIGHT/2 - Assets.menutext.getHeight()/2 - 150, null);
 	
-		for(Button b: m.getButtons()) {
+		m.getButtons().forEach( b -> {
 			DrawButton drawButton = new DrawButtonImpl(b,g2);
 			drawButton.updateDrawButton();
-		}
+		});
+		SingletonInsertNamePlayer.resetSingleton();
 	}
 
 
@@ -145,10 +140,10 @@ public class DrawStateImpl implements DrawState{
 		
 		PauseState p = (PauseState) currentState;
 	
-		for(Button b: p.getButtons()) {
+		p.getButtons().forEach( b -> {
 			DrawButton drawButton = new DrawButtonImpl(b,g2);
 			drawButton.updateDrawButton();
-		}
+		});
 	}
 
 	private void drawScoreState() {

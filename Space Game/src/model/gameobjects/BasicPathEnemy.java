@@ -6,6 +6,7 @@ import mathgame.Vector2D;
 
 public class BasicPathEnemy implements EnemyPathStrategy{
 	
+	private static int SIZE_SIMPLE_PATH = 4;
 	private int index = 0;
 	
 	@Override
@@ -13,7 +14,7 @@ public class BasicPathEnemy implements EnemyPathStrategy{
 		
 		double posX, posY;
 		
-		for(int i = 0; i < 4; i++) {
+		for(int i = 0; i < SIZE_SIMPLE_PATH; i++) {
 			posX = Math.random()*Constants.WIDTH/2;
 			posY = Math.random()*Constants.HEIGHT/2;	
 			path.add(new Vector2D(posX, posY));

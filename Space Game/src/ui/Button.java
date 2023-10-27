@@ -3,7 +3,6 @@ package ui;
 import input.MouseInput;
 import model.gameobjects.Constants;
 
-
 public class Button {
 	
 	private boolean mouseIn;

@@ -3,9 +3,7 @@ package model.states;
 import java.util.ArrayList;
 
 import model.gameobjects.Constants;
-import ui.Action;
 import ui.Button;
-import view.state.InsertNamePlayer;
 
 public class MenuState extends State{
 
@@ -20,47 +18,28 @@ public class MenuState extends State{
 				.posX(Constants.WIDTH / 2 - Constants.BUTTON_WIDTH/2)
 				.posY(Constants.HEIGHT / 2 - Constants.BUTTON_HEIGHT * 2)
 				.text(Constants.PLAY)
-				.action(new Action() {
-					
-					@Override
-					public void doAction() {
-						new InsertNamePlayer();
-						State.setState(new InitState());
-					}
-				})
+				.action(()-> {
+						State.setState(new InitState());})
 				.build());
 		
 		buttons.add(button2 = new Button.Builder()
 				.posX(Constants.WIDTH / 2 - Constants.BUTTON_WIDTH/2)
 				.posY(Constants.HEIGHT / 2)
 				.text(Constants.HIGH_SCORES)
-				.action(new Action() {
-					@Override
-					public void doAction() {
-						State.setState(new ScoreState());
-					}
-				})
+				.action(()-> State.setState(new ScoreState()))
 				.build());
 		
 		buttons.add(button3 = new Button.Builder()
 				.posX(Constants.WIDTH / 2 - Constants.BUTTON_WIDTH/2)
 				.posY(Constants.HEIGHT / 2 + Constants.BUTTON_HEIGHT * 2)
 				.text(Constants.EXIT)
-				.action(new Action() {
-					@Override
-					public void doAction() {
-						System.exit(0);
-					}
-				})
+				.action(() -> System.exit(0))
 				.build());
-		
 	}
 	
 	@Override
 	public void update(float dt) {
-		for(Button b: buttons) {
-			b.update();
-		}
+		buttons.forEach( b->b.update());
 	}
 
 	public ArrayList<Button> getButtons() {
