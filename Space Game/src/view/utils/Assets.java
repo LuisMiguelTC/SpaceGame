@@ -25,7 +25,7 @@ public class Assets {
 	
 	public static BufferedImage blueLaser, greenLaser, redLaser;
 	
-	// Meteors
+	// asteroids
 	
 	public static BufferedImage[] bigs = new BufferedImage[4];
 	public static BufferedImage[] meds = new BufferedImage[2];
@@ -89,16 +89,16 @@ public class Assets {
 			shieldEffect[i] = loadImage("/effects/shield" + (i + 1) +".png"); 
 		
 		for(int i = 0; i < bigs.length; i++)
-			bigs[i] = loadImage("/meteors/big"+(i+1)+".png");
+			bigs[i] = loadImage("/asteroids/big"+(i+1)+".png");
 		
 		for(int i = 0; i < meds.length; i++)
-			meds[i] = loadImage("/meteors/med"+(i+1)+".png");
+			meds[i] = loadImage("/asteroids/med"+(i+1)+".png");
 		
 		for(int i = 0; i < smalls.length; i++)
-			smalls[i] = loadImage("/meteors/small"+(i+1)+".png");
+			smalls[i] = loadImage("/asteroids/small"+(i+1)+".png");
 		
 		for(int i = 0; i < tinies.length; i++)
-			tinies[i] = loadImage("/meteors/tiny"+(i+1)+".png");
+			tinies[i] = loadImage("/asteroids/tiny"+(i+1)+".png");
 		
 		for(int i = 0; i < exp.length; i++)
 			exp[i] = loadImage("/explosion/"+i+".png");
