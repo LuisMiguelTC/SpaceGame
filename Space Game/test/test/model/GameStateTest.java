@@ -12,6 +12,7 @@ import input.GameInput;
 import mathgame.Vector2D;
 import model.Space;
 import model.gameobjects.Asteroid;
+import model.gameobjects.GameObjectType;
 import model.gameobjects.MovingObject;
 import model.gameobjects.Player;
 import model.states.GameState;
@@ -19,6 +20,7 @@ import model.states.InitState;
 import model.states.MenuState;
 import model.states.ScoreState;
 import model.states.State;
+import model.states.StateType;
 import model.utils.JSONParser;
 
 public class GameStateTest {
@@ -97,7 +99,7 @@ public class GameStateTest {
 		assertEquals(2,space.getMovingObjects().size());
 		assertTrue(space.getMovingObjects().stream()
 				.map(m->m.getType()).collect(Collectors.toList())
-				.containsAll(Arrays.asList("PLAYER", "METEOR")));
+				.containsAll(Arrays.asList(GameObjectType.PLAYER, GameObjectType.ASTEROID)));
 	}
 	
 	@org.junit.Test
@@ -136,8 +138,8 @@ public class GameStateTest {
 		assertEquals(20,gameState.getScore());
 		assertTrue(space.getMovingObjects().stream()
 				.map(m-> m.getType()).collect(Collectors.toList())
-				.containsAll(Arrays.asList("PLAYER", "METEOR","METEOR")));	
-	
+				.containsAll(Arrays.asList(GameObjectType.PLAYER, 
+						GameObjectType.ASTEROID, GameObjectType.ASTEROID)));	
 	}
 	
 	@org.junit.Test
@@ -148,7 +150,7 @@ public class GameStateTest {
 		gameState.spawnEnemy();
 		
 		List<MovingObject> enemies = space.getMovingObjects().stream()
-				.filter(m->m.getType().equals("ENEMY")).collect(Collectors.toList());
+				.filter(m->m.getType().equals(GameObjectType.ENEMY)).collect(Collectors.toList());
 		
 		//l'oggetto player collisiona con tutti e tre nemici singolarmente, e dopo ogni collisione
 		//viene settata la generazione del giocatore a false, così da esser pronto 
@@ -196,17 +198,17 @@ public class GameStateTest {
 		space.getPlayer().destroy(space);
 		space.getPlayer().destroy(space);
 		gameState.update(3500);
-		assertTrue("MENU".equals(State.getCurrentState().get().typeState()));
+		assertTrue(StateType.MENU.equals(State.getCurrentState().get().typeState()));
 		menuState.getButtons().get(1).getAction().doAction();
-		assertTrue("SCORE".equals(State.getCurrentState().get().typeState()));
+		assertTrue(StateType.SCORE.equals(State.getCurrentState().get().typeState()));
 		scoreState = (ScoreState) State.getCurrentState().get();
 		scoreState.getButton().getAction().doAction();
-		assertTrue("MENU".equals(State.getCurrentState().get().typeState()));
+		assertTrue(StateType.MENU.equals(State.getCurrentState().get().typeState()));
 		menuState.getButtons().get(0).getAction().doAction();
-		assertTrue("INIT".equals(State.getCurrentState().get().typeState()));
+		assertTrue(StateType.INIT.equals(State.getCurrentState().get().typeState()));
 		initState = (InitState) State.getCurrentState().get();
 		initState.getButton().getAction().doAction();
-		assertTrue("GAMESTATE".equals(State.getCurrentState().get().typeState()));
+		assertTrue(StateType.GAME.equals(State.getCurrentState().get().typeState()));
 		gameState = new GameState(initState.getNamePlayer().get());
 		assertEquals("UnknownPlayer", gameState.getNamePlayer());
 		
@@ -269,20 +271,6 @@ public class GameStateTest {
 		assertEquals(80, gameState.getScore());
 	}
 	
-	/*@org.junit.Test
-	public void TestCasualPowerUp() {
-		//IL TEST POTREBBE FALLIRE PERCHE' IL POWERUP VIENE GENERATO IN MANIERA CASUALE
-		Space space = gameState.getSpace();
-		Player player = space.getPlayer();
-		//supponiamo di generare un powerUp casuale
-		gameState.spawnPowerUp();
-		PowerUp powerUp = space.getPowerUp();
-		//controlliamo il tipo di powerUp
-		player.objectCollision(player, powerUp, space);
-		gameState.update(dt);
-		assertEquals(1000, gameState.getScore());
-	}*/
-	
 	@org.junit.Test
 	public void TestData(){
 		assertEquals("Miguel", gameState.getNamePlayer());
@@ -308,4 +296,18 @@ public class GameStateTest {
 			e.printStackTrace();
 		}	
 	}
+	
+	/*@org.junit.Test
+	public void TestCasualPowerUp() {
+		//IL TEST POTREBBE FALLIRE PERCHE' IL POWERUP VIENE GENERATO IN MANIERA CASUALE
+		Space space = gameState.getSpace();
+		Player player = space.getPlayer();
+		//supponiamo di generare un powerUp casuale
+		gameState.spawnPowerUp();
+		PowerUp powerUp = space.getPowerUp();
+		//controlliamo il tipo di powerUp
+		player.objectCollision(player, powerUp, space);
+		gameState.update(dt);
+		assertEquals(1000, gameState.getScore());
+	}*/
 }

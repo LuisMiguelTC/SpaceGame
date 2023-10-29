@@ -1,4 +1,4 @@
-package ui;
+package model.utils;
 
 import input.MouseInput;
 import model.gameobjects.Constants;
@@ -59,28 +59,28 @@ public class Button {
 		return mouseIn;
 	}
 	
-	public static class Builder{
+	public static class ButtonBuilder{
 		
 		private int posX;
 		private int posY;
 		private Action action;
 		private String text;
 
-		public Builder posX(final int posX) {
+		public ButtonBuilder posX(final int posX) {
 			this.posX = posX;
 			return this;
 		}
 		
-		public Builder posY(final int posY) {
+		public ButtonBuilder posY(final int posY) {
 			this.posY = posY;
 			return this;
 		}
 		
-		public Builder action(final Action action) {
+		public ButtonBuilder action(final Action action) {
 			this.action = action;
 			return this;
 		}
-		public Builder text(final String text) {
+		public ButtonBuilder text(final String text) {
 			this.text = text;
 			return this;
 		}

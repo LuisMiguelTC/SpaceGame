@@ -31,8 +31,8 @@ public class Laser extends MovingObject{
 	}
 
 	@Override
-	public String getType() {
-		return "LASER" ;
+	public GameObjectType getType() {
+		return GameObjectType.LASER ;
 	}
 	
 	public String colorLaser() {

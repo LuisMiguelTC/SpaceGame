@@ -51,6 +51,16 @@ public class Enemy extends MovingObject implements EnemyFeatures{
 		velocity = velocity.limit(maxVel);
 		position = position.add(velocity);
 		
+		if(position.getX() > Constants.WIDTH)
+			position.setX(0);
+		if(position.getY() > Constants.HEIGHT)
+			position.setY(0);
+		
+		if(position.getX() < -width)
+			position.setX(Constants.WIDTH);
+		if(position.getY() < -height)
+			position.setY(Constants.HEIGHT);
+		
 		//shoot
 		if(fireRate > Constants.ENEMY_FIRERATE) {
 			
@@ -95,7 +105,7 @@ public class Enemy extends MovingObject implements EnemyFeatures{
 	}
 	
 	@Override
-	public String getType() {
-		return "ENEMY";
+	public GameObjectType getType() {
+		return GameObjectType.ENEMY;
 	}
 }

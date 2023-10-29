@@ -13,7 +13,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class Loader {
 	
-	public static BufferedImage ImageLoader(String path)
+	public static BufferedImage imageLoader(String path)
 	{
 		try {
 			return ImageIO.read(Loader.class.getResource(path));

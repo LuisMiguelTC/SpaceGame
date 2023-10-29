@@ -2,7 +2,7 @@ package model.states;
 
 import java.util.Optional;
 import model.gameobjects.Constants;
-import ui.Button;
+import model.utils.Button;
 
 public class InitState extends State{
 	
@@ -11,7 +11,7 @@ public class InitState extends State{
 	
 	public InitState() {
 		
-		startButton = new Button.Builder()
+		startButton = new Button.ButtonBuilder()
 				.posX(Constants.BUTTON_HEIGHT)
 				.posY(Constants.HEIGHT - Constants.BUTTON_HEIGHT * 2)
 				.text(Constants.STARTGAME)
@@ -39,8 +39,8 @@ public class InitState extends State{
 	}
 	
 	@Override
-	public String typeState() {
-		return "INIT";
+	public StateType typeState() {
+		return StateType.INIT;
 	}
 }
 

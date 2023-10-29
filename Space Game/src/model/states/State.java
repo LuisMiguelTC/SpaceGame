@@ -16,5 +16,5 @@ public abstract class State {
 	
 	public abstract void update(float dt);
 
-	public abstract String typeState();	
+	public abstract StateType typeState();	
 }

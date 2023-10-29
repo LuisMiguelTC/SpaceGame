@@ -15,7 +15,7 @@ public class PauseState extends MenuState{
 	}
 	
 	@Override
-	public String typeState() {
-		return "PAUSE";
+	public StateType typeState() {
+		return StateType.PAUSE;
 	}
 }

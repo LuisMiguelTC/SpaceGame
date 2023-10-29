@@ -1,17 +1,19 @@
 package model.gameobjects;
 
+import java.util.Optional;
+
 import mathgame.Vector2D;
 import model.Space;
 
 public class Asteroid extends MovingObject implements AsteroidFeatures{
 
 	private Size size;
-	private int randomMeteor;
+	private int randomAsteroid;
 	private boolean isDivided;
 	
-	public Asteroid(Vector2D position, Vector2D dimension, Vector2D velocity, double maxVel, int randomMeteor, Size size) {
+	public Asteroid(Vector2D position, Vector2D dimension, Vector2D velocity, double maxVel, int randomAsteroid, Size size) {
 		super(position, dimension, velocity, maxVel);
-		this.randomMeteor = randomMeteor;
+		this.randomAsteroid = randomAsteroid;
 		this.size = size;
 		this.velocity = velocity.scale(maxVel);
 		this.isDivided = false;
@@ -21,7 +23,7 @@ public class Asteroid extends MovingObject implements AsteroidFeatures{
 	@Override
 	public Vector2D fleeForce(Space space) {
 		Vector2D desiredVelocity = space.getPlayer().getCenter().subtract(getCenter());
-		desiredVelocity = (desiredVelocity.normalize()).scale(Constants.METEOR_MAX_VEL);
+		desiredVelocity = (desiredVelocity.normalize()).scale(Constants.ASTEROID_MAX_VEL);
 		Vector2D v = new Vector2D(velocity);
 		return v.subtract(desiredVelocity);
 	}
@@ -45,7 +47,7 @@ public class Asteroid extends MovingObject implements AsteroidFeatures{
 			velocity = velocity.add(reversedVelocity.normalize().scale(0.01f));
 		}
 		
-		velocity = velocity.limit(Constants.METEOR_MAX_VEL);
+		velocity = velocity.limit(Constants.ASTEROID_MAX_VEL);
 		position = position.add(velocity);
 		
 		if(position.getX() > Constants.WIDTH)
@@ -63,31 +65,31 @@ public class Asteroid extends MovingObject implements AsteroidFeatures{
 	
 	public void divideAsteroid(Space space) {
 		
-		Size size = this.getSize();
-		Size newSize = null;
+		size = this.getSize();
+		Optional<Size> newSize = Optional.empty();
 		
 		switch(size){
-			case BIG -> newSize =  Size.MED;
-			case MED -> newSize = Size.SMALL;
-			case SMALL -> newSize = Size.TINY;
-			default -> newSize = null;
+			case BIG -> newSize =  Optional.of(Size.MED);
+			case MED -> newSize =  Optional.of(Size.SMALL);
+			case SMALL -> newSize =  Optional.of(Size.TINY);
+			default -> newSize = Optional.empty();
 		}
 			
 		for(int i = 0; i < size.quantity; i++) {
 			space.addMovingObject(new Asteroid(
 					this.getPosition(),
-					new Vector2D(newSize.dimension),
+					new Vector2D(newSize.get().dimension),
 					new Vector2D(0, 1).setDirection(Math.random()*Math.PI*2),
-					Constants.METEOR_INIT_VEL*Math.random() + 1,
+					Constants.ASTEROID_INIT_VEL*Math.random() + 1,
 					(int)(Math.random()),
-					newSize
+					newSize.get()
 					));
 		}
 	}
 	
 	@Override
-	public int getRandomMeteor() {
-		return this.randomMeteor;
+	public int getRandomAsteroid() {
+		return this.randomAsteroid;
 	}
 	
 	@Override
@@ -106,7 +108,7 @@ public class Asteroid extends MovingObject implements AsteroidFeatures{
 	}
 	
 	@Override
-	public String getType() {
-		return "METEOR";
+	public GameObjectType getType() {
+		return GameObjectType.ASTEROID;
 	}
 }

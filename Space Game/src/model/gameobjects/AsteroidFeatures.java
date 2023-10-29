@@ -7,7 +7,7 @@ public interface AsteroidFeatures {
 
 	public Vector2D fleeForce(Space space);
 
-	public int getRandomMeteor();
+	public int getRandomAsteroid();
 	
 	public Size getSize();
 	

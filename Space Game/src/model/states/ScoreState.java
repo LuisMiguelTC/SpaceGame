@@ -7,33 +7,27 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 import model.gameobjects.Constants;
+import model.utils.Button;
 import model.utils.JSONParser;
 import model.utils.ScoreData;
-import ui.Button;
 
 public class ScoreState extends State{
 
 	private Button returnButton;
 	private PriorityQueue<ScoreData> highScores;	
-	private Comparator<ScoreData> scoreComparator;
 	private ScoreData[] auxArray;
 
 	
 	public ScoreState() {
 		
-		returnButton = new Button.Builder()
+		returnButton = new Button.ButtonBuilder()
 				.posX(Constants.BUTTON_HEIGHT)
 				.posY(Constants.HEIGHT - Constants.BUTTON_HEIGHT * 2)
 				.text(Constants.RETURN)
 				.action(()-> State.setState(new MenuState()))
 				.build();
 		
-		scoreComparator = (ScoreData e1, ScoreData e2) -> {
-				return e1.getScore() < e2.getScore() ? -1: e1.getScore() > e2.getScore() ? 1: 0;
-		};
-		
-		highScores = new PriorityQueue<ScoreData>(10, scoreComparator);
-		
+		highScores = new PriorityQueue<ScoreData>(10, Comparator.comparing(ScoreData::getScore));
 		
 		try {
 			ArrayList<ScoreData> dataList = JSONParser.readFile();
@@ -45,7 +39,7 @@ public class ScoreState extends State{
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		}
+		}	
 	}
 
 	@Override
@@ -59,8 +53,7 @@ public class ScoreState extends State{
 	
 	public ScoreData[] getScoreArraySorted() {
 		auxArray = highScores.toArray(new ScoreData[highScores.size()]);
-		Arrays.sort(auxArray, scoreComparator);
-		
+		Arrays.sort(auxArray, Comparator.comparing(ScoreData::getScore));
 		return auxArray;
 	}
 	
@@ -69,7 +62,7 @@ public class ScoreState extends State{
 	}
 	
 	@Override
-	public String typeState() {
-		return "SCORE";
+	public StateType typeState() {
+		return StateType.SCORE;
 	}
 }

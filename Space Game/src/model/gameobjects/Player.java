@@ -280,7 +280,7 @@ public class Player extends MovingObject implements PlayerFeatures{
 	}
 
 	@Override
-	public String getType() {
-		return "PLAYER";
+	public GameObjectType getType() {
+		return GameObjectType.PLAYER;
 	}
 }

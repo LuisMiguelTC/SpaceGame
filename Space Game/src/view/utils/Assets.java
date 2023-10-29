@@ -129,7 +129,7 @@ public class Assets {
 
 	public static BufferedImage loadImage(String path) {
 		count ++;
-		return Loader.ImageLoader(path);
+		return Loader.imageLoader(path);
 	}
 	public static Font loadFont(String path, int size) {
 		count ++;

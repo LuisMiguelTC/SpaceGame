@@ -14,14 +14,13 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
-
 import controller.engine.Controller;
 import input.GameInput;
 import input.MouseInput;
 import model.gameobjects.Constants;
 import model.states.State;
+import view.state.Draw;
 import view.state.DrawState;
-import view.state.DrawStateImpl;
 import view.utils.Assets;
 import view.utils.SoundManager;
 
@@ -33,8 +32,8 @@ public class GameView implements View{
 	private MouseInput mouseInput;
 	private SoundManager soundManager;
 	
-	public GameView(Controller gameController)
-	{
+	public GameView(Controller gameController){
+		
 		this.gameController = gameController;
 		this.gameInput = new GameInput(VK_UP,VK_LEFT,VK_RIGHT,VK_SPACE,VK_ESCAPE);
 		this.mouseInput = new MouseInput(MouseEvent.BUTTON1);
@@ -105,11 +104,12 @@ public class GameView implements View{
 			g2.fillRect(0, 0, Constants.WIDTH, Constants.HEIGHT);
 			g2.setColor(Color.BLACK);
 			g2.drawImage(Assets.background, 0,0, null);
-			
-			
+
 			State current = gameController.getModelState();
-			DrawState drawState = new DrawStateImpl(current,g2, soundManager);
-			drawState.updateStateDraw();
+			Draw draw = () -> { DrawState drawState = new DrawState(current,g2, soundManager);
+				drawState.updateStateDraw();
+			};
+			draw.updateDraw();
 		}
 		
 		@Override

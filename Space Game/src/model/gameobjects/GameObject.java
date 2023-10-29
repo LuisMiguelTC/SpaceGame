@@ -59,6 +59,6 @@ public abstract class GameObject implements GameObjectFeatures {
 
 	public abstract void update(float dt, Space s);
 	
-	public abstract String getType();
+	public abstract GameObjectType getType();
 }
 

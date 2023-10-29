@@ -3,9 +3,8 @@ package view.utils;
 public class SoundManager {
 
 	private Sound background;
-	Sound shoot = new Sound(Assets.playerShoot);
-	Sound explosion = new Sound(Assets.explosion);
-	Sound playerLoose = new Sound(Assets.playerLoose);
+	private Sound shoot = new Sound(Assets.playerShoot);
+	private Sound explosion = new Sound(Assets.explosion);
 	
 	public SoundManager() {
 		background = new Sound(Assets.backgroundMusic);

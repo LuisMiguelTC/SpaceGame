@@ -52,14 +52,14 @@ public class SingletonInsertNamePlayer extends JFrame{
 		setVisible(true);
 	}
 	
-	static SingletonInsertNamePlayer getInstance() {
+	public static SingletonInsertNamePlayer getInstance() {
 		if(instance == null) {
 			instance = new SingletonInsertNamePlayer();
 		}
 		return instance;
 	}
 	
-	static void resetSingleton() {
+	public static void resetSingleton() {
 		instance = null;
 	}
 }

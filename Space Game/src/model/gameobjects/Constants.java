@@ -23,9 +23,9 @@ public class Constants {
 	public static final double LASER_VEL_ENEMY = 7.0;
 	
 	// Asteroid properties
-	public static final double METEOR_INIT_VEL = 1.0;
-	public static final int METEOR_SCORE = 20;
-	public static final double METEOR_MAX_VEL = 3.0;
+	public static final double ASTEROID_INIT_VEL = 1.0;
+	public static final int ASTEROID_SCORE = 20;
+	public static final double ASTEROID_MAX_VEL = 3.0;
 	public static final int SHIELD_DISTANCE = 150;
 	
 	// Enemy properties

@@ -42,8 +42,9 @@ public class GameController implements Controller{
 			
 			if(delta >= 1){
 				gameView.updateInput();
-				updateModelState(period);
 				updateView();
+				updateModelState(period);
+				
 				delta --;
 			}
 			

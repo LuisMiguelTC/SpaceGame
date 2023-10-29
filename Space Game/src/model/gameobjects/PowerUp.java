@@ -2,7 +2,7 @@ package model.gameobjects;
 
 import mathgame.Vector2D;
 import model.Space;
-import ui.Action;
+import model.utils.Action;
 
 public class PowerUp extends MovingObject {
 
@@ -33,8 +33,8 @@ public class PowerUp extends MovingObject {
 	}
 	
 	@Override
-	public String getType() {
-		return "POWERUP";
+	public GameObjectType getType() {
+		return GameObjectType.POWERUP;
 	}
 	
 	public PowerUpTypes getPowerUpType() {

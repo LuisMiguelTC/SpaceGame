@@ -51,21 +51,17 @@ public class Message {
 		return color;
 	}
 
-
 	public boolean isCenter() {
 		return center;
 	}
-
 
 	public boolean isFade() {
 		return fade;
 	}
 
-
 	public String getSizeFont() {
 		return sizeFont;
 	}
-
 
 	public float getDeltaAlpha() {
 		return deltaAlpha;
@@ -79,14 +75,11 @@ public class Message {
 		this.fade = fade;
 	}
 
-
 	public void setDead(boolean dead) {
 		this.dead = dead;
 	}
 
-
 	public void setInitialYPosition() {
 		position.setY(initialYPosition);
 	}
-	
 }

@@ -6,25 +6,9 @@ import java.util.LinkedList;
 import controller.engine.GameFactory;
 import input.GameInput;
 import mathgame.Vector2D;
-import model.HitEvent;
-import model.Space;
-import model.SpaceEvent;
-import model.SpaceEventListener;
-import model.gameobjects.BasicPathEnemy;
-import model.gameobjects.Constants;
-import model.gameobjects.Enemy;
-import model.gameobjects.Laser;
-import model.gameobjects.Asteroid;
-import model.gameobjects.MovingObject;
-import model.gameobjects.Player;
-import model.gameobjects.PowerUp;
-import model.gameobjects.PowerUpTypes;
-import model.gameobjects.Size;
-import model.utils.Animation;
-import model.utils.ColorMessage;
-import model.utils.JSONParser;
-import model.utils.ScoreData;
-import ui.Action;
+import model.*;
+import model.gameobjects.*;
+import model.utils.*;
 
 public class GameState extends State implements Game,SpaceEventListener{
 
@@ -47,9 +31,9 @@ public class GameState extends State implements Game,SpaceEventListener{
 		
 		this.eventQueue = new LinkedList<SpaceEvent>();
 		this.namePlayer = namePlayer;
-		this.space = new Space();
+		this.space = new SpaceImpl();
 		this.f = GameFactory.getInstance();
-		this.space.addMovingObject(f.createPlayer());
+		this.space.setPlayer(f.createPlayer());
 		this.space.addGameMessages(f.createGameMessage(new Vector2D(Constants.WIDTH/2, Constants.HEIGHT/2),
 				false, "START GAME", ColorMessage.YELLOW));
 		this.space.setEventListener(this);
@@ -77,14 +61,14 @@ public class GameState extends State implements Game,SpaceEventListener{
 			x = i % 2 == 0 ? Math.random()*Constants.WIDTH : 0;
 			y = i % 2 == 0 ? 0 : Math.random()*Constants.HEIGHT;
 			
-			int randomMeteor = (int)(Math.random()*3);
+			int randomAsteroid = (int)(Math.random()*3);
 			
 			space.addMovingObject(new Asteroid(
 					new Vector2D(x, y),
 					new Vector2D(95,80),
 					new Vector2D(0, 1).setDirection(Math.random()*Math.PI*2),
-					Constants.METEOR_INIT_VEL*Math.random() + 1,
-					randomMeteor,
+					Constants.ASTEROID_INIT_VEL*Math.random() + 1,
+					randomAsteroid,
 					Size.BIG
 					));
 		}
@@ -268,7 +252,7 @@ public class GameState extends State implements Game,SpaceEventListener{
 						else if (mo instanceof Asteroid) {
 							((Asteroid) mo).setIsDivided(true);
 							((Asteroid) mo).divideAsteroid(space);
-							this.addScore(Constants.METEOR_SCORE, mo.getPosition());
+							this.addScore(Constants.ASTEROID_SCORE, mo.getPosition());
 						}
 					}
 				}	
@@ -303,7 +287,7 @@ public class GameState extends State implements Game,SpaceEventListener{
 	}	
 	
 	@Override
-	public String typeState() {
-		return "GAMESTATE";
+	public StateType typeState() {
+		return StateType.GAME;
 	}
 }

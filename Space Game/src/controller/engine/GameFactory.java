@@ -3,7 +3,6 @@ package controller.engine;
 import mathgame.Vector2D;
 import model.gameobjects.Constants;
 import model.gameobjects.Enemy;
-import model.gameobjects.MovingObject;
 import model.gameobjects.Player;
 import model.utils.ColorMessage;
 import model.utils.Message;
@@ -22,7 +21,7 @@ public class GameFactory {
 		return instance;
 	}
 		
-	public MovingObject createPlayer(){
+	public Player createPlayer(){
 		return new Player(PLAYER_START_POSITION, new Vector2D(38.0,38.0),new Vector2D(0,0), Constants.PLAYER_MAX_VEL);			
 	}
 	
